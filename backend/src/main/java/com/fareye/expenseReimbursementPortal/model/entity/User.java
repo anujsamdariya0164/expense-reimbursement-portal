@@ -15,9 +15,6 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 public class User {
-    public enum ROLES {
-        ADMIN, MANAGER, EMPLOYEE
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -29,8 +26,9 @@ public class User {
     @Column(name = "email", unique = true)
     private String email;
 
-    @Column(name = "role")
-    private ROLES role;
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
 
     @Column(name = "password")
     private String password;
