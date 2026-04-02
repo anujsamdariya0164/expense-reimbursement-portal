@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Table(name = "audit_logs")
 public class AuditLog {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Enumerated(EnumType.STRING)

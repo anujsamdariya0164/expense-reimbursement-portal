@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "budgets")
 public class Budget {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "maximum_limit")
