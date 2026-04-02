@@ -54,6 +54,7 @@ public class UserService {
         User newUser = User.builder()
                 .name(createUserRequest.getName())
                 .email(createUserRequest.getEmail())
+                .password(createUserRequest.getPassword())
                 .role(roleById)
                 .department(departmentById)
                 .manager(managerById)
