@@ -1,24 +1,28 @@
 package com.fareye.expenseReimbursementPortal.model.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.util.List;
 
 @Builder
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "claims")
 public class Claim {
     public enum STATUSES {
-        DRAFT, SUBMITTED, NEEDS_INFORMATION, APPROVED, REJECTED, PAID
+        REJECTED, DRAFT, SUBMITTED, APPROVED, PAID
     }
 
     public enum CATEGORIES {
         TRAVEL, TRANSPORTATION, MEALS, ENTERTAINMENT, SUPPLIES, INTERNET, TRAINING
+    }
+
+    public enum APPROVAL_MODE {
+        AUTO, MANAGER, MANAGER_AND_ADMIN
     }
 
     @Id
@@ -39,6 +43,9 @@ public class Claim {
     @Enumerated(EnumType.STRING)
     private CATEGORIES category;
 
+    @Enumerated(EnumType.STRING)
+    private APPROVAL_MODE approvalMode;
+
     @Column(name = "comment")
     private String comment;
 
@@ -49,4 +56,7 @@ public class Claim {
     @ManyToOne
     @JoinColumn(name = "employee_id")
     private User employee;
+
+    @OneToMany(mappedBy = "claim")
+    private List<AuditLog> auditLogs;
 }

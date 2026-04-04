@@ -14,6 +14,8 @@ public class UserResponse {
 
     private String name;
 
+    private Long roleId;
+
     private String role;
 
     private Long departmentId;
@@ -25,6 +27,4 @@ public class UserResponse {
     private String managerName;
 
     private String managerEmail;
-
-    private List<EmployeeDetails> employees;
 }

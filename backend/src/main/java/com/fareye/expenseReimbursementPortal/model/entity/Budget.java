@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Builder
 @Getter
 @AllArgsConstructor
@@ -22,6 +24,9 @@ public class Budget {
 
     @Column(name = "used_amount")
     private Long usedAmount;
+
+    @OneToMany(mappedBy = "budget")
+    private List<Claim> claims;
 
     @OneToOne
     @JoinColumn(name = "department_id")
