@@ -51,9 +51,15 @@ public class UserService {
 
         Department departmentById = departmentRepository.findById(createUserRequest.getDepartmentId()).orElseThrow(() -> new RuntimeException("Department with ID: " + createUserRequest.getDepartmentId() + " does not exists!"));
 
-        User managerById = (createUserRequest.getManagerId() != null) ?
-                userRepository.findById(createUserRequest.getManagerId()).orElseThrow(() -> new RuntimeException("Manager with ID: " + createUserRequest.getManagerId() + " does not exists!")) :
+        User managerById = (departmentById.getManager() != null) ?
+                userRepository.findById(departmentById.getManager().getId()).orElseThrow(() -> new RuntimeException("Manager with ID: " + departmentById.getManager().getId() + " does not exists!")) :
                 null;
+
+        if (createUserRequest.getRoleId() == 2) {
+            if (departmentById.getManager() != null) {
+                throw new RuntimeException("Department with ID: " + createUserRequest.getDepartmentId() + " already has a manager assigned!");
+            }
+        }
 
         User newUser = User.builder()
                 .name(createUserRequest.getName())
@@ -64,12 +70,12 @@ public class UserService {
                 .manager(managerById)
                 .build();
 
+        User savedUser = userRepository.save(newUser);
+
         if (createUserRequest.getRoleId() == 2) {
-            departmentById.setManager(newUser);
+            departmentById.setManager(savedUser);
             departmentRepository.save(departmentById);
         }
-
-        User savedUser = userRepository.save(newUser);
 
         return userMapper.toUserResponse(savedUser);
     }

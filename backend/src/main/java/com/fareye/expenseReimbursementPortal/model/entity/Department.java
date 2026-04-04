@@ -28,6 +28,9 @@ public class Department {
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL)
     private List<User> employees;
 
+    @OneToMany(mappedBy = "assignedDepartment", cascade = CascadeType.ALL)
+    private List<Claim> claims;
+
     @OneToOne(mappedBy = "departmentAssigned", cascade = CascadeType.ALL)
     private Budget budget;
 }

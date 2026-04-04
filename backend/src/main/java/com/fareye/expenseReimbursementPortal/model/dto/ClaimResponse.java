@@ -28,4 +28,8 @@ public class ClaimResponse {
     private String employeeName;
 
     private String employeeEmail;
+
+    private Long departmentId;
+
+    private String departmentName;
 }

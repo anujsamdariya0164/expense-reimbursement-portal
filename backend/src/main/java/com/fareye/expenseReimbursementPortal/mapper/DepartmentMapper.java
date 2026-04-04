@@ -17,6 +17,8 @@ public class DepartmentMapper {
                 .managerName(department.getManager() == null ? null : department.getManager().getName())
                 .managerEmail(department.getManager() == null ? null : department.getManager().getEmail())
                 .budgetId(department.getBudget() == null ? null : department.getBudget().getId())
+                .budgetAmount(department.getBudget() == null ? null : department.getBudget().getAmount())
+                .budgetLimit(department.getBudget() == null ? null : department.getBudget().getLimit())
                 .employees(department.getEmployees() == null ? null :
                         department.getEmployees().stream().map(employee ->
                                                                EmployeeDetails.builder()

@@ -12,6 +12,7 @@ import com.fareye.expenseReimbursementPortal.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -54,9 +55,12 @@ public class AuditLogService {
                 .claim(claimById)
                 .build();
 
+        if (actorById.getAuditLog() == null) actorById.setAuditLog(new ArrayList<>());
+
         actorById.getAuditLog().add(newAuditLog);
         userRepository.save(actorById);
 
+        if (claimById.getAuditLogs() == null) claimById.setAuditLogs(new ArrayList<>());
         claimById.getAuditLogs().add(newAuditLog);
         claimRepository.save(claimById);
 

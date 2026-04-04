@@ -21,6 +21,8 @@ public class ClaimMapper {
                 .employeeId(claim.getEmployee() == null ? null : claim.getEmployee().getId() )
                 .employeeName(claim.getEmployee() == null ? null : claim.getEmployee().getName() )
                 .employeeEmail(claim.getEmployee() == null ? null : claim.getEmployee().getEmail())
+                .departmentId(claim.getAssignedDepartment() == null ? null : claim.getAssignedDepartment().getId())
+                .departmentName(claim.getAssignedDepartment() == null ? null : claim.getAssignedDepartment().getName())
                 .build();
     }
 

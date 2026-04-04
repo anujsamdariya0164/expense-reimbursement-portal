@@ -1,16 +1,21 @@
 package com.fareye.expenseReimbursementPortal.service;
 
 import com.fareye.expenseReimbursementPortal.mapper.ClaimMapper;
+import com.fareye.expenseReimbursementPortal.model.dto.CreateAuditLogRequest;
 import com.fareye.expenseReimbursementPortal.model.dto.CreateClaimRequest;
 import com.fareye.expenseReimbursementPortal.model.dto.ClaimResponse;
+import com.fareye.expenseReimbursementPortal.model.dto.UpdateBudgetRequest;
 import com.fareye.expenseReimbursementPortal.model.entity.Budget;
 import com.fareye.expenseReimbursementPortal.model.entity.Claim;
+import com.fareye.expenseReimbursementPortal.model.entity.Department;
 import com.fareye.expenseReimbursementPortal.model.entity.User;
 import com.fareye.expenseReimbursementPortal.repository.BudgetRepository;
 import com.fareye.expenseReimbursementPortal.repository.ClaimRepository;
+import com.fareye.expenseReimbursementPortal.repository.DepartmentRepository;
 import com.fareye.expenseReimbursementPortal.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,7 +28,13 @@ public class ClaimService {
 
     private final UserRepository userRepository;
 
-    public ClaimService(ClaimRepository claimRepository, ClaimMapper claimMapper, BudgetRepository budgetRepository, UserRepository userRepository) {
+    private final BudgetService budgetService;
+
+    private final DepartmentRepository departmentRepository;
+
+    private final AuditLogService auditLogService;
+
+    public ClaimService(ClaimRepository claimRepository, ClaimMapper claimMapper, BudgetRepository budgetRepository, UserRepository userRepository, BudgetService budgetService, DepartmentRepository departmentRepository, AuditLogService auditLogService) {
         this.claimRepository = claimRepository;
 
         this.claimMapper = claimMapper;
@@ -31,6 +42,12 @@ public class ClaimService {
         this.budgetRepository = budgetRepository;
 
         this.userRepository = userRepository;
+
+        this.budgetService = budgetService;
+
+        this.departmentRepository = departmentRepository;
+
+        this.auditLogService = auditLogService;
     }
 
     public List<ClaimResponse> getAllClaims() {
@@ -41,15 +58,34 @@ public class ClaimService {
         return claimMapper.toClaimResponse(claimRepository.findById(id).orElseThrow(() -> new RuntimeException("Claim with ID: " + id + " does not exists!")));
     }
 
-    public ClaimResponse createClaim(CreateClaimRequest createClaimRequest) {
-        Budget budgetById = null;
-        if (createClaimRequest.getBudgetId() != null) {
-            budgetById = budgetRepository.findById(createClaimRequest.getBudgetId()).orElseThrow(() -> new RuntimeException("Budget with ID: " + createClaimRequest.getBudgetId() + " does not exists!"));
-        }
+    public List<ClaimResponse> getClaimsMadeByEmployee(Long employeeId) {
+        User employeeById = userRepository.findById(employeeId).orElseThrow(() -> new RuntimeException("Employee with ID: " + employeeId + " does not exists!"));
 
+        return claimMapper.toListOfClaimResponse(claimRepository.findClaimByEmployee(employeeById));
+    }
+
+    public List<ClaimResponse> getClaimsByDepartment(Long departmentId) {
+        Department departmentById = departmentRepository.findById(departmentId).orElseThrow(() -> new RuntimeException("Department with ID: " + departmentId + " does not exists!"));
+
+        return claimMapper.toListOfClaimResponse(claimRepository.findClaimByAssignedDepartment(departmentById));
+    }
+
+    public ClaimResponse createClaim(CreateClaimRequest createClaimRequest) {
         User employeeById = null;
         if (createClaimRequest.getEmployeeId() != null) {
             employeeById = userRepository.findById(createClaimRequest.getEmployeeId()).orElseThrow(() -> new RuntimeException("Employee with ID: " + createClaimRequest.getEmployeeId() + " does not exists!"));
+        }
+
+        Department departmentById = null;
+        Long departmentId = employeeById.getDepartment().getId();
+        if (departmentId != null) {
+            departmentById = departmentRepository.findById(departmentId).orElseThrow(() -> new RuntimeException("Department with ID: " + departmentId + " does not exists!"));
+        }
+
+        Budget budgetById = null;
+        Long budgetId = employeeById.getDepartment().getBudget().getId();
+        if (budgetId != null) {
+            budgetById = budgetRepository.findById(budgetId).orElseThrow(() -> new RuntimeException("Budget with ID: " + budgetId + " does not exists!"));
         }
 
         Claim newClaim = Claim.builder()
@@ -61,23 +97,63 @@ public class ClaimService {
                 .comment(createClaimRequest.getComment())
                 .budget(budgetById)
                 .employee(employeeById)
+                .assignedDepartment(departmentById)
                 .build();
+
+        if (
+                (newClaim.getCategory() == Claim.CATEGORIES.MEALS && newClaim.getAmount() > 50 && (newClaim.getComment() == null || newClaim.getComment().isEmpty())) ||
+                (newClaim.getAmount() + newClaim.getBudget().getAmount() > newClaim.getBudget().getLimit())
+        ) {
+            newClaim.setStatus(Claim.STATUSES.REJECTED);
+        } else if (newClaim.getAmount() <= 100) {
+            newClaim.setApprovalMode(Claim.APPROVAL_MODE.AUTO);
+            newClaim.setStatus(Claim.STATUSES.APPROVED);
+            budgetService.updateBudgetById(newClaim.getBudget().getId(), UpdateBudgetRequest.builder().amount(newClaim.getAmount()).build());
+        } else if (newClaim.getAmount() <= 1000) {
+            newClaim.setApprovalMode(Claim.APPROVAL_MODE.MANAGER);
+        } else {
+            newClaim.setApprovalMode(Claim.APPROVAL_MODE.MANAGER_AND_ADMIN);
+        }
 
         Claim savedClaim = claimRepository.save(newClaim);
 
         if (employeeById != null) {
+            if (employeeById.getClaims() == null) employeeById.setClaims(new ArrayList<>());
             employeeById.getClaims().add(savedClaim);
+            userRepository.save(employeeById);
         }
 
         if (budgetById != null) {
+            if (budgetById.getClaims() == null) budgetById.setClaims(new ArrayList<>());
             budgetById.getClaims().add(savedClaim);
+            budgetRepository.save(budgetById);
         }
+
+        if (departmentById != null) {
+            if (departmentById.getClaims() == null) departmentById.setClaims(new ArrayList<>());
+            departmentById.getClaims().add(savedClaim);
+            departmentRepository.save(departmentById);
+        }
+
+        CreateAuditLogRequest createAuditLogRequest = CreateAuditLogRequest.builder()
+                .action(savedClaim.getStatus())
+                .actorId(savedClaim.getEmployee().getId())
+                .claimId(savedClaim.getId())
+                .build();
+
+        auditLogService.createAuditLog(createAuditLogRequest);
 
         return claimMapper.toClaimResponse(savedClaim);
     }
 
     public ClaimResponse updateStatus(Long id, Claim.STATUSES status) {
+        System.out.println("Starting updateStatus claim service function");
         Claim claimById = claimRepository.findById(id).orElseThrow(() -> new RuntimeException("Claim with ID: " + id + " does not exists!"));
+
+        if (claimById.getAssignedDepartment().getId() != claimById.getEmployee().getDepartment().getId()) {
+            throw new RuntimeException("The claim is of another budget!");
+        }
+
 
         if (claimById.getStatus() == Claim.STATUSES.REJECTED) {
             throw new RuntimeException("Cannot update status of a rejected claim!");
@@ -91,9 +167,30 @@ public class ClaimService {
             throw new IllegalStateException("Cannot skip status!");
         }
 
+        if ((claimById.getAmount() + claimById.getBudget().getAmount() > claimById.getBudget().getLimit()) && status == Claim.STATUSES.APPROVED) {
+            throw new RuntimeException("Budget Overflow!");
+        }
+
+        if (status == Claim.STATUSES.PAID) {
+            UpdateBudgetRequest updateBudgetRequest = UpdateBudgetRequest.builder()
+                    .amount(claimById.getAmount())
+                    .build();
+            budgetService.updateBudgetById(claimById.getBudget().getId(), updateBudgetRequest);
+        }
+
         claimById.setStatus(status);
 
-        return claimMapper.toClaimResponse(claimRepository.save(claimById));
+        Claim updatedClaim = claimRepository.save(claimById);
+
+//        CreateAuditLogRequest createAuditLogRequest = CreateAuditLogRequest.builder()
+//                .action(updatedClaim.getStatus())
+//                .actorId(null) // take out the user from current session and fill
+//                .claimId(updatedClaim.getId())
+//                .build();
+//
+//        auditLogService.createAuditLog(createAuditLogRequest);
+
+        return claimMapper.toClaimResponse(updatedClaim);
     }
 
     public void deleteClaimById(Long id) {

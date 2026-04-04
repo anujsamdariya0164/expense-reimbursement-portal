@@ -29,6 +29,16 @@ public class ClaimController {
         return ResponseEntity.status(HttpStatus.OK).body(claimService.getClaimById(Long.parseLong(id)));
     }
 
+    @GetMapping("/employee/{id}")
+    public ResponseEntity<List<ClaimResponse>> getClaimsByEmployee(@PathVariable String id) {
+        return ResponseEntity.status(HttpStatus.OK).body(claimService.getClaimsMadeByEmployee(Long.parseLong(id)));
+    }
+
+    @GetMapping("/department/{id}")
+    public ResponseEntity<List<ClaimResponse>> getClaimsByDepartment(@PathVariable String id) {
+        return ResponseEntity.status(HttpStatus.OK).body(claimService.getClaimsByDepartment(Long.parseLong(id)));
+    }
+
     @PostMapping
     public ResponseEntity<ClaimResponse> createClaim(@RequestBody CreateClaimRequest createClaimRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(claimService.createClaim(createClaimRequest));

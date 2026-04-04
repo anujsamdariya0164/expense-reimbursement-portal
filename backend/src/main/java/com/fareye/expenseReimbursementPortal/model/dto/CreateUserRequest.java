@@ -12,7 +12,5 @@ public class CreateUserRequest {
 
     private Long roleId;
 
-    private Long managerId;
-
     private Long departmentId;
 }

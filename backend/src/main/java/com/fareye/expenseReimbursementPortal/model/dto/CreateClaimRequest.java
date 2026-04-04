@@ -15,7 +15,5 @@ public class CreateClaimRequest {
 
     private Claim.APPROVAL_MODE approvalMode;
 
-    private Long budgetId;
-
     private Long employeeId;
 }

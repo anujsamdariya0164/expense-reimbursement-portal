@@ -59,4 +59,8 @@ public class Claim {
 
     @OneToMany(mappedBy = "claim")
     private List<AuditLog> auditLogs;
+
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private Department assignedDepartment;
 }

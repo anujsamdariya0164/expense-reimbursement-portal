@@ -20,5 +20,9 @@ public class DepartmentResponse {
 
     private Long budgetId;
 
+    private Long budgetAmount;
+
+    private Long budgetLimit;
+
     private List<EmployeeDetails> employees;
 }
