@@ -42,6 +42,7 @@ public class BudgetController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteBudgetById(@PathVariable String id) {
+        budgetService.deleteBudgetById(Long.parseLong(id));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
