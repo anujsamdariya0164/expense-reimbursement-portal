@@ -4,6 +4,9 @@ import SignUp from "./SignUp/SignUp";
 import Layout from "./Layout";
 import Navbar from "./Navbar/Navbar";
 import Footer from "./Footer/Footer";
+import AddClaim from "./AddClaim/AddClaim";
+import ManagerDashboard from "./ManagerDashboard/ManagerDashboard";
+import UpdateClaimStatus from "./UpdateClaimStatus/UpdateClaimStatus";
 import PageNotFound from "./PageNotFound/PageNotFound";
 
 export {
@@ -13,5 +16,8 @@ export {
     Layout,
     Navbar,
     Footer,
+    AddClaim,
+    ManagerDashboard,
+    UpdateClaimStatus,
     PageNotFound,
 };
