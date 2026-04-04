@@ -1,15 +1,13 @@
 package com.fareye.expenseReimbursementPortal.model.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
 @Builder
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -22,13 +20,13 @@ public class Budget {
     @Column(name = "maximum_limit")
     private Long limit;
 
-    @Column(name = "used_amount")
-    private Long usedAmount;
+    @Column(name = "amount")
+    private Long amount;
 
     @OneToMany(mappedBy = "budget")
     private List<Claim> claims;
 
     @OneToOne
     @JoinColumn(name = "department_id")
-    private Department department;
+    private Department departmentAssigned;
 }

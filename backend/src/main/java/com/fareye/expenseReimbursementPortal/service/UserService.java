@@ -43,6 +43,10 @@ public class UserService {
     }
 
     public UserResponse createUser(CreateUserRequest createUserRequest) {
+        if (createUserRequest.getRoleId() == 1) {
+            throw new RuntimeException("Permission denied!");
+        }
+
         Role roleById = roleRepository.findById(createUserRequest.getRoleId()).orElseThrow(() -> new RuntimeException("Role with ID :" + createUserRequest.getRoleId() + " does not exists!"));
 
         Department departmentById = departmentRepository.findById(createUserRequest.getDepartmentId()).orElseThrow(() -> new RuntimeException("Department with ID: " + createUserRequest.getDepartmentId() + " does not exists!"));
@@ -61,7 +65,8 @@ public class UserService {
                 .build();
 
         if (createUserRequest.getRoleId() == 2) {
-//        TODO: Assign manager here to departmentById
+            departmentById.setManager(newUser);
+            departmentRepository.save(departmentById);
         }
 
         User savedUser = userRepository.save(newUser);
