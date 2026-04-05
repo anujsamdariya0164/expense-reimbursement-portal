@@ -1,11 +1,17 @@
 import React, { useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useBudgetStore } from '../../store/useBudgetStore'
 
 const AddBudget = () => {
   const param = useParams()
 
+  const navigate = useNavigate()
+
+  const {createBudget} = useBudgetStore()
+
   const [formData, setFormData] = useState({
       limit: 0,
+      departmentId: param.id,
     })
 
     const handleChange = (key, value) => {
@@ -16,6 +22,11 @@ const AddBudget = () => {
 
     const handleSubmit = async (event) => {
       event.preventDefault()
+
+      await createBudget(formData)
+
+      navigate(`/admin/dashboard/department/${id}`)
+
       console.log(formData)
     }
 

@@ -1,13 +1,17 @@
 import React, { useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useUserStore } from '../../store/useUserStore'
 
 const AddEmployee = () => {
   const param = useParams()
 
+  const navigate = useNavigate()
+
+  const {user, createUser} = useUserStore()
+
   const [formData, setFormData] = useState({
       name: '',
       email: '',
-      password: 'password123',
       roleId: 3,
       departmentId: param.departmentId,
     })
@@ -20,7 +24,12 @@ const AddEmployee = () => {
 
     const handleSubmit = async (event) => {
       event.preventDefault()
+
+      await createUser(formData)
+
       console.log(formData)
+
+      navigate(`/admin/dashboard/department/${param.departmentId}`)
     }
 
   return (

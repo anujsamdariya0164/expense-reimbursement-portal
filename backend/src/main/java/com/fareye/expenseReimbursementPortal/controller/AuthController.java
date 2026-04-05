@@ -49,10 +49,10 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<UserResponse> createUser(@RequestBody CreateUserRequest createUserRequest) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.createUser(createUserRequest));
-    }
+//    @PostMapping("/signup")
+//    public ResponseEntity<UserResponse> createUser(@RequestBody CreateUserRequest createUserRequest) {
+//        return ResponseEntity.status(HttpStatus.OK).body(userService.createUser(createUserRequest));
+//    }
 
     @GetMapping("/current")
     public ResponseEntity<UserResponse> getCurrentUser() {
@@ -67,5 +67,16 @@ public class AuthController {
         UserResponse userResponse = userService.getUserByEmail(email);
 
         return ResponseEntity.ok(userResponse);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+
+        SecurityContextHolder.clearContext();
+        return ResponseEntity.ok("Logged out successfully");
     }
 }

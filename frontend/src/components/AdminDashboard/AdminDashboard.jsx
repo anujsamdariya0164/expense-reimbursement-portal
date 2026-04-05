@@ -1,213 +1,11 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useDepartmentStore } from '../../store/useDepartmentStore'
 
 const AdminDashboard = () => {
     const navigate = useNavigate()
 
-  const departments = [
-    {
-        "budgetAmount": 45200,
-        "budgetId": 1,
-        "budgetLimit": 50000,
-        "employees": [
-            {
-                "email": "pari.khanna@gmail.com",
-                "id": 2,
-                "name": "Pari Khanna"
-            },
-            {
-                "email": "vihaan.joshi@gmail.com",
-                "id": 8,
-                "name": "Vihaan Joshi"
-            },
-            {
-                "email": "ishwar.verma@gmail.com",
-                "id": 9,
-                "name": "Ishwar Verma"
-            },
-            {
-                "email": "aditya.kapoor@gmail.com",
-                "id": 10,
-                "name": "Aditya Kapoor"
-            }
-        ],
-        "id": 1,
-        "managerEmail": "pari.khanna@gmail.com",
-        "managerId": 2,
-        "managerName": "Pari Khanna",
-        "name": "Engineering"
-    },
-    {
-        "budgetAmount": 2000,
-        "budgetId": 2,
-        "budgetLimit": 50000,
-        "employees": [
-            {
-                "email": "ananya.verma@gmail.com",
-                "id": 3,
-                "name": "Ananya Verma"
-            },
-            {
-                "email": "ishaan.reddy@gmail.com",
-                "id": 11,
-                "name": "Ishaan Reddy"
-            },
-            {
-                "email": "aadhya.patel@gmail.com",
-                "id": 12,
-                "name": "Aadhya Patel"
-            },
-            {
-                "email": "kavita.kulkarni@gmail.com",
-                "id": 13,
-                "name": "Kavita Kulkarni"
-            },
-            {
-                "email": "arjun.iyer@gmail.com",
-                "id": 14,
-                "name": "Arjun Iyer"
-            },
-            {
-                "email": "ishaan.nair@gmail.com",
-                "id": 15,
-                "name": "Ishaan Nair"
-            }
-        ],
-        "id": 2,
-        "managerEmail": "ananya.verma@gmail.com",
-        "managerId": 3,
-        "managerName": "Ananya Verma",
-        "name": "Product Management"
-    },
-    {
-        "budgetAmount": 0,
-        "budgetId": 3,
-        "budgetLimit": 50000,
-        "employees": [
-            {
-                "email": "sanjay.kapoor@gmail.com",
-                "id": 4,
-                "name": "Sanjay Kapoor"
-            },
-            {
-                "email": "aadhya.mehta@gmail.com",
-                "id": 16,
-                "name": "Aadhya Mehta"
-            },
-            {
-                "email": "saanvi.iyer@gmail.com",
-                "id": 17,
-                "name": "Saanvi Iyer"
-            },
-            {
-                "email": "pari.shah@gmail.com",
-                "id": 18,
-                "name": "Pari Shah"
-            }
-        ],
-        "id": 3,
-        "managerEmail": "sanjay.kapoor@gmail.com",
-        "managerId": 4,
-        "managerName": "Sanjay Kapoor",
-        "name": "Marketing"
-    },
-    {
-        "budgetAmount": 0,
-        "budgetId": 4,
-        "budgetLimit": 50000,
-        "employees": [
-            {
-                "email": "sanjay.deshmukh@gmail.com",
-                "id": 5,
-                "name": "Sanjay Deshmukh"
-            },
-            {
-                "email": "saanvi.yadav@gmail.com",
-                "id": 19,
-                "name": "Saanvi Yadav"
-            },
-            {
-                "email": "ishaan.sharma@gmail.com",
-                "id": 20,
-                "name": "Ishaan Sharma"
-            },
-            {
-                "email": "vikram.gill@gmail.com",
-                "id": 21,
-                "name": "Vikram Gill"
-            }
-        ],
-        "id": 4,
-        "managerEmail": "sanjay.deshmukh@gmail.com",
-        "managerId": 5,
-        "managerName": "Sanjay Deshmukh",
-        "name": "Sales"
-    },
-    {
-        "budgetAmount": 0,
-        "budgetId": 5,
-        "budgetLimit": 50000,
-        "employees": [
-            {
-                "email": "ishaan.shah@gmail.com",
-                "id": 6,
-                "name": "Ishaan Shah"
-            },
-            {
-                "email": "kavita.patel@gmail.com",
-                "id": 22,
-                "name": "Kavita Patel"
-            },
-            {
-                "email": "deepika.shah@gmail.com",
-                "id": 23,
-                "name": "Deepika Shah"
-            },
-            {
-                "email": "anika.chawla@gmail.com",
-                "id": 24,
-                "name": "Anika Chawla"
-            }
-        ],
-        "id": 5,
-        "managerEmail": "ishaan.shah@gmail.com",
-        "managerId": 6,
-        "managerName": "Ishaan Shah",
-        "name": "Customer Retention"
-    },
-    {
-        "budgetAmount": 0,
-        "budgetId": 6,
-        "budgetLimit": 50000,
-        "employees": [
-            {
-                "email": "aditya.gupta@gmail.com",
-                "id": 7,
-                "name": "Aditya Gupta"
-            },
-            {
-                "email": "navya.malhotra@gmail.com",
-                "id": 25,
-                "name": "Navya Malhotra"
-            },
-            {
-                "email": "diya.khanna@gmail.com",
-                "id": 26,
-                "name": "Diya Khanna"
-            },
-            {
-                "email": "priya.bhasin@gmail.com",
-                "id": 27,
-                "name": "Priya Bhasin"
-            }
-        ],
-        "id": 6,
-        "managerEmail": "aditya.gupta@gmail.com",
-        "managerId": 7,
-        "managerName": "Aditya Gupta",
-        "name": "IT"
-    }
-  ]
+    const {departments, getAllDepartments} = useDepartmentStore()
 
   const auditLogs = [
     {
@@ -346,6 +144,10 @@ const AdminDashboard = () => {
 
         return date + ' at ' + time
     }
+
+    useEffect(() => {
+        getAllDepartments()
+    }, [])
   
     return (
     <div className='flex flex-col gap-4 m-6'>
@@ -373,7 +175,7 @@ const AdminDashboard = () => {
                                         <tr key={index} className='grid grid-cols-5 p-5 text-center border-2'>
                                             <td>{department.id}</td>
                                             <td>{department.name}</td>
-                                            <td>{department.managerEmail}</td>
+                                            <td>{department.managerEmail ?? '-'}</td>
                                             <td>{department.managerName ?? '-'}</td>
                                             <td className='underline cursor-pointer text-sm font-semibold' onClick={() => navigate(`/admin/dashboard/department/${department.id}`)}>Show More</td>
                                         </tr>

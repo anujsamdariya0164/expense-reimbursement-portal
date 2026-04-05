@@ -2,6 +2,7 @@ package com.fareye.expenseReimbursementPortal.advice;
 
 import com.fareye.expenseReimbursementPortal.model.dto.ExceptionResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -39,12 +40,35 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ExceptionResponse> handleDataIntegrityViolation(
+            DataIntegrityViolationException exception, HttpServletRequest request
+    ) {
+        String message = exception.getMessage();
+        if (message.contains("ukj6cwks7xecs5jov19ro8ge3qk")) {
+            message = "Department with this name already exists!";
+        } else if (message.contains("uk6dotkott2kjsp8vw4d0m25fb7")) {
+            message = "User with this email already exists!";
+        }
+
+        ExceptionResponse response = ExceptionResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.CONFLICT.value())
+                .message(message)
+                .path(request.getRequestURI())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionResponse> handleGeneralException(Exception exception, HttpServletRequest request) {
         if (exception.getMessage().contains("InternalAuthenticationServiceException")) {
             return handleAuthException(new InternalAuthenticationServiceException("User with the given email does not exists!"), request);
         } else if (exception.getMessage().contains("BadCredentialsException")) {
             return handleIncorrectPassword(new BadCredentialsException("Incorrect password!"), request);
+        } else if (exception.getMessage().contains("duplicate key value violates unique constraint")) {
+            return handleDataIntegrityViolation(new DataIntegrityViolationException(exception.getMessage()), request);
         }
 
         ExceptionResponse response = ExceptionResponse.builder()

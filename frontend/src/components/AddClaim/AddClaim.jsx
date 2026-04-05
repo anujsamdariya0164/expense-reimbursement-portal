@@ -1,5 +1,7 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useClaimStore } from '../../store/useClaimStore'
+import { useAuthStore } from '../../store/useAuthStore'
 
 const AddClaim = () => {
     const categories = ['TRAVEL', 'TRANSPORTATION', 'MEALS', 'ENTERTAINMENT', 'SUPPLIES', 'INTERNET', 'TRAINING']
@@ -8,12 +10,17 @@ const AddClaim = () => {
 
     const navigate = useNavigate()
 
+    const {createClaim} = useClaimStore()
+
+    const {authUser} = useAuthStore()
+
     const [formData, setFormData] = useState({
         amount: 0,
         comment: '',
         proofUrl: '',
         category: '',
         approvalMode: '',
+        employeeId: ''
         // employeeId to come from current session
     })
 
@@ -25,6 +32,15 @@ const AddClaim = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault()
+
+        console.log('ID:', authUser)
+
+        formData.employeeId = authUser.id
+
+        await createClaim(formData)
+
+        navigate('/')
+
         console.log(formData)
     }
 

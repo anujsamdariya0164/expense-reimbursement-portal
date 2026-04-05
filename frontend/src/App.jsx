@@ -1,11 +1,11 @@
 import { Toaster } from "react-hot-toast"
 import { createBrowserRouter, createRoutesFromElements, Navigate, Route, RouterProvider } from "react-router-dom"
 import { AddBudget, AddClaim, AddEmployee, AdminDashboard, AssignManager, DepartmentDetails, EmployeeDetails, Home, Layout, Login, ManagerDashboard, PageNotFound, SignUp, UpdateClaimStatus } from "./components"
-import { useStore } from "./store/useStore"
 import { useEffect } from "react"
+import { useAuthStore } from "./store/useAuthStore"
 
 function App() {
-  const {authUser, isCheckingAuth, checkAuth} = useStore()
+  const {authUser, isCheckingAuth, checkAuth} = useAuthStore()
 
   useEffect(() => {
     checkAuth()
@@ -23,8 +23,8 @@ function App() {
     createRoutesFromElements(
       <Route path="/" element={<Layout/>}>
         <Route path="" element={authUser ? <Home/> : <Navigate to='/login'/>} />
-        <Route path="/login" element={!authUser ? <Login/> : <Navigate to='/login'/>} />
-        <Route path="/signup" element={!authUser ? <SignUp/> : <Navigate to='/login'/>} />
+        <Route path="/login" element={!authUser ? <Login/> : <Navigate to='/'/>}/>
+        <Route path="/signup" element={!authUser ? <SignUp/> : <Navigate to='/'/>} />
         <Route path="claim">
           <Route path="add" element={<AddClaim/>} />
           <Route path=":id" element={<UpdateClaimStatus/>} />

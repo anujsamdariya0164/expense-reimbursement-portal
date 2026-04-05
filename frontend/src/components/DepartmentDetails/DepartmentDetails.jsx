@@ -1,213 +1,29 @@
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useDepartmentStore } from '../../store/useDepartmentStore'
+import { useClaimStore } from '../../store/useClaimStore'
 
 const DepartmentDetails = () => {
-  const claims = [
-  {
-    "amount": 10000,
-    "approvalMode": "AUTO",
-    "budgetId": 1,
-    "category": "MEALS",
-    "comment": null,
-    "departmentId": 1,
-    "departmentName": "Engineering",
-    "employeeEmail": "vihaan.joshi@gmail.com",
-    "employeeId": 8,
-    "employeeName": "Vihaan Joshi",
-    "id": 4,
-    "proofUrl": "https://example.com/proof.jpg",
-    "status": "REJECTED"
-  },
-  {
-    "amount": 100000,
-    "approvalMode": "AUTO",
-    "budgetId": 1,
-    "category": "MEALS",
-    "comment": "This is a travel claim for a business trip.",
-    "departmentId": 1,
-    "departmentName": "Engineering",
-    "employeeEmail": "vihaan.joshi@gmail.com",
-    "employeeId": 8,
-    "employeeName": "Vihaan Joshi",
-    "id": 6,
-    "proofUrl": "https://example.com/proof.jpg",
-    "status": "REJECTED"
-  },
-  {
-    "amount": 10000,
-    "approvalMode": "MANAGER_AND_ADMIN",
-    "budgetId": 1,
-    "category": "TRAVEL",
-    "comment": "This is a travel claim for a business trip.",
-    "departmentId": 1,
-    "departmentName": "Engineering",
-    "employeeEmail": "vihaan.joshi@gmail.com",
-    "employeeId": 8,
-    "employeeName": "Vihaan Joshi",
-    "id": 1,
-    "proofUrl": "https://example.com/proof.jpg",
-    "status": "APPROVED"
-  },
-  {
-    "amount": 10000,
-    "approvalMode": "MANAGER_AND_ADMIN",
-    "budgetId": 1,
-    "category": "TRAVEL",
-    "comment": "This is a travel claim for a business trip.",
-    "departmentId": 1,
-    "departmentName": "Engineering",
-    "employeeEmail": "vihaan.joshi@gmail.com",
-    "employeeId": 8,
-    "employeeName": "Vihaan Joshi",
-    "id": 2,
-    "proofUrl": "https://example.com/proof.jpg",
-    "status": "APPROVED"
-  },
-  {
-    "amount": 10000,
-    "approvalMode": "MANAGER_AND_ADMIN",
-    "budgetId": 1,
-    "category": "TRAVEL",
-    "comment": "This is a travel claim for a business trip.",
-    "departmentId": 1,
-    "departmentName": "Engineering",
-    "employeeEmail": "vihaan.joshi@gmail.com",
-    "employeeId": 8,
-    "employeeName": "Vihaan Joshi",
-    "id": 3,
-    "proofUrl": "https://example.com/proof.jpg",
-    "status": "PAID"
-  },
-  {
-    "amount": 10000,
-    "approvalMode": "MANAGER_AND_ADMIN",
-    "budgetId": 1,
-    "category": "TRAVEL",
-    "comment": "This is a travel claim for a business trip.",
-    "departmentId": 1,
-    "departmentName": "Engineering",
-    "employeeEmail": "vihaan.joshi@gmail.com",
-    "employeeId": 8,
-    "employeeName": "Vihaan Joshi",
-    "id": 7,
-    "proofUrl": "https://example.com/proof.jpg",
-    "status": "PAID"
-  },
-  {
-    "amount": 10000,
-    "approvalMode": "MANAGER_AND_ADMIN",
-    "budgetId": 1,
-    "category": "MEALS",
-    "comment": "This is a travel claim for a business trip.",
-    "departmentId": 1,
-    "departmentName": "Engineering",
-    "employeeEmail": "vihaan.joshi@gmail.com",
-    "employeeId": 8,
-    "employeeName": "Vihaan Joshi",
-    "id": 8,
-    "proofUrl": "https://example.com/proof.jpg",
-    "status": "PAID"
-  },
-  {
-    "amount": 100,
-    "approvalMode": "AUTO",
-    "budgetId": 1,
-    "category": "MEALS",
-    "comment": "This is a travel claim for a business trip.",
-    "departmentId": 1,
-    "departmentName": "Engineering",
-    "employeeEmail": "vihaan.joshi@gmail.com",
-    "employeeId": 8,
-    "employeeName": "Vihaan Joshi",
-    "id": 9,
-    "proofUrl": "https://example.com/proof.jpg",
-    "status": "PAID"
-  },
-  {
-    "amount": 10000,
-    "approvalMode": "MANAGER_AND_ADMIN",
-    "budgetId": 1,
-    "category": "MEALS",
-    "comment": "This is a travel claim for a business trip.",
-    "departmentId": 1,
-    "departmentName": "Engineering",
-    "employeeEmail": "vihaan.joshi@gmail.com",
-    "employeeId": 8,
-    "employeeName": "Vihaan Joshi",
-    "id": 5,
-    "proofUrl": "https://example.com/proof.jpg",
-    "status": "PAID"
-  },
-  {
-    "amount": 1000,
-    "approvalMode": "MANAGER",
-    "budgetId": 1,
-    "category": "MEALS",
-    "comment": "This is a travel claim for a business trip.",
-    "departmentId": 1,
-    "departmentName": "Engineering",
-    "employeeEmail": "vihaan.joshi@gmail.com",
-    "employeeId": 8,
-    "employeeName": "Vihaan Joshi",
-    "id": 10,
-    "proofUrl": "https://example.com/proof.jpg",
-    "status": "PAID"
-  },
-  {
-    "amount": 2000,
-    "approvalMode": "MANAGER_AND_ADMIN",
-    "budgetId": 1,
-    "category": "MEALS",
-    "comment": "This is a travel claim for a business trip.",
-    "departmentId": 1,
-    "departmentName": "Engineering",
-    "employeeEmail": "vihaan.joshi@gmail.com",
-    "employeeId": 8,
-    "employeeName": "Vihaan Joshi",
-    "id": 11,
-    "proofUrl": "https://example.com/proof.jpg",
-    "status": "PAID"
-  },
-]
+  const params = useParams()
 
-  const department = {
-    "budgetAmount": 45200,
-    "budgetId": 1,
-    "budgetLimit": 50000,
-    "employees": [
-      {
-        "email": "pari.khanna@gmail.com",
-        "id": 2,
-        "name": "Pari Khanna",
-        "role": "MANAGER"
-      },
-      {
-        "email": "vihaan.joshi@gmail.com",
-        "id": 8,
-        "name": "Vihaan Joshi",
-        "role": "EMPLOYEE"
-      },
-      {
-        "email": "ishwar.verma@gmail.com",
-        "id": 9,
-        "name": "Ishwar Verma",
-        "role": "EMPLOYEE"
-      },
-      {
-        "email": "aditya.kapoor@gmail.com",
-        "id": 10,
-        "name": "Aditya Kapoor",
-        "role": "EMPLOYEE"
-      }
-    ],
-    "id": 1,
-    "managerEmail": "pari.khanna@gmail.com",
-    "managerId": 2,
-    "managerName": "Pari Khanna",
-    "name": "Engineering"
-  }
+  const {id: departmentId} = params
+
+  const {department, getDepartmentById} = useDepartmentStore()
+
+  const {claims, getClaimsByDepartment} = useClaimStore()
 
   const navigate = useNavigate()
+
+  useEffect(() => {
+    console.log(departmentId)
+    getDepartmentById(departmentId)
+    getClaimsByDepartment(departmentId)
+  }, [])
+
+  useEffect(() => {
+    console.log(department)
+    console.log(claims)
+  }, [department, claims])
 
   return (
     <div className='flex flex-col m-6 gap-5'>
@@ -220,13 +36,18 @@ const DepartmentDetails = () => {
 
         <div className='flex justify-between p-5'>
           <div>
-            <h1><span className='font-bold'>Department ID: </span> {department.id}</h1>
-            <h1><span className='font-bold'>Department Name: </span> {department.name}</h1>
+            <h1><span className='font-bold'>Department ID: </span> {department.id ?? '-'}</h1>
+            <h1><span className='font-bold'>Department Name: </span> {department.name ?? '-'}</h1>
+          </div>
+          
+          <div>
+            <h1><span className='font-bold'>Manager Email: </span> {department.managerEmail ?? '-'}</h1>
+            <h1><span className='font-bold'>Manager Name: </span> {department.managerName ?? '-'}</h1>
           </div>
 
           <div>
-            <h1><span className='font-bold'>Budget Limit: </span> ${department.budgetLimit}</h1>
-            <h1><span className='font-bold'>Budget Amount: </span> ${department.budgetAmount}</h1>
+            <h1><span className='font-bold'>Budget Limit: </span> ${department.budgetLimit ?? '-'}</h1>
+            <h1><span className='font-bold'>Budget Amount: </span> ${department.budgetAmount ?? '-'}</h1>
           </div>
         </div>
       </div>
@@ -241,13 +62,6 @@ const DepartmentDetails = () => {
           </div>
 
           <div className='flex gap-5 items-center'>
-            <button 
-              className='font-bold text-2xl cursor-pointer border-white border-2 p-3 rounded hover:bg-white hover:text-[#303030] flex items-end h-auto' 
-              onClick={() => navigate(`/admin/dashboard/employee/add/${department.id}`)}
-            >
-              <h1>Add Employee +</h1>
-            </button>
-
             {
               department.managerId === null ? (
                 <button 
@@ -256,7 +70,14 @@ const DepartmentDetails = () => {
                 >
                   <h1>Assign Manager +</h1>
                 </button>
-              ) : (<></>)
+              ) : (
+                <button 
+                  className='font-bold text-2xl cursor-pointer border-white border-2 p-3 rounded hover:bg-white hover:text-[#303030] flex items-end h-auto' 
+                  onClick={() => navigate(`/admin/dashboard/employee/add/${department.id}`)}
+                >
+                  <h1>Add Employee +</h1>
+                </button>
+              )
             }
 
             {
@@ -341,7 +162,7 @@ const DepartmentDetails = () => {
 
                 <tbody>
                   {
-                    claims && 
+                    claims && claims.length > 0 && 
                     claims.map((claim, index) => (
                       <tr key={index} className='grid grid-cols-5 p-5 text-center border-2'>
                       <td>{claim.id}</td>
@@ -367,7 +188,9 @@ const DepartmentDetails = () => {
 
           {
             !claims && (
-              <h1>No claims made</h1>
+              <div className='h-[10vh] border-2 flex justify-center items-center'>
+                <h1>No claims made</h1>
+              </div>
             )
           }
         </div>

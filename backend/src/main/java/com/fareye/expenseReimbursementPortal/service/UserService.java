@@ -73,15 +73,15 @@ public class UserService implements UserDetailsService {
             }
         }
 
-        String encodedPassword = passwordEncoder.encode(createUserRequest.getPassword());
+        String encodedPassword = passwordEncoder.encode("password123");
 
         User newUser = User.builder()
                 .name(createUserRequest.getName())
                 .email(createUserRequest.getEmail())
                 .password(encodedPassword)
                 .role(roleById)
-                .department(null)
-                .manager(null)
+                .department(departmentById)
+                .manager(managerById)
                 .build();
 
         User savedUser = userRepository.save(newUser);

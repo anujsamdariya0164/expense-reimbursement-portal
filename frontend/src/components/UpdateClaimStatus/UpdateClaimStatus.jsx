@@ -1,30 +1,35 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useClaimStore } from '../../store/useClaimStore'
+import { useNavigate, useParams } from 'react-router-dom'
 
 const UpdateClaimStatus = () => {
-  const claim = {
-    "amount": 10000,
-    "approvalMode": "AUTO",
-    "budgetId": 1,
-    "category": "MEALS",
-    "comment": null,
-    "departmentId": 1,
-    "departmentName": "Engineering",
-    "employeeEmail": "vihaan.joshi@gmail.com",
-    "employeeId": 8,
-    "employeeName": "Vihaan Joshi",
-    "id": 4,
-    "proofUrl": "https://example.com/proof.jpg",
-    "status": "SUBMITTED"
-  }
+  const param = useParams()
+
+  const navigate = useNavigate()
+
+  const {claim, getClaimById, updateStatus} = useClaimStore()
 
   const statuses = ['REJECTED', 'SUBMITTED', 'APPROVED', 'PAID']
 
   const [status, setStatus] = useState(claim.status)
 
-  const handleUpdate = (e) => {
+  const handleUpdate = async (e) => {
     e.preventDefault()
+
+    await updateStatus(param.id, {status: status})
+
+    navigate(-1)
+
     console.log(claim)
   }
+
+  useEffect(() => {
+    getClaimById(param.id)
+  }, [param.id])
+
+  useEffect(() => {
+    console.log(claim)
+  }, [claim])
 
   return (
     <div className='flex items-center justify-center h-[70vh]'>
@@ -43,7 +48,7 @@ const UpdateClaimStatus = () => {
 
           <h3>
             <span className='font-bold'>Approval Mode:</span>{" "}
-            {claim?.approvalMode.replace('_', ' ').toLowerCase()}
+            {claim?.approvalMode}
           </h3>
 
           <h3>

@@ -8,8 +8,6 @@ public class CreateUserRequest {
 
     private String email;
 
-    private String password;
-
     private Long roleId;
 
     private Long departmentId;

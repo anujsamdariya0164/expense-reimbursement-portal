@@ -1,8 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuthStore } from '../../store/useAuthStore'
 
 const Login = () => {
   const navigate = useNavigate()
+
+  const {login, isLoading} = useAuthStore()
 
   const [formData, setFormData] = useState({
     email: '',
@@ -17,6 +20,10 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    await login(formData)
+
+    navigate('/')
   }
 
   return (
@@ -37,8 +44,10 @@ const Login = () => {
             </div>
 
             <div className='text-center'>
-              <button className='font-bold text-xl cursor-pointer border-white border-2 px-10 rounded hover:bg-white hover:text-[#303030] flex items-end h-auto' type='submit'>
-                <h1>Submit</h1>
+              <button disabled={isLoading} className='font-bold text-xl cursor-pointer border-white border-2 px-10 rounded hover:bg-white hover:text-[#303030] flex items-end h-auto' type='submit'>
+                <h1>
+                  {isLoading? 'Loading...': 'Submit'}
+                </h1>
               </button>
             </div>
           </form>

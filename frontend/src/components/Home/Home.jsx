@@ -1,176 +1,23 @@
 import { useNavigate } from 'react-router-dom'
+import { useClaimStore } from '../../store/useClaimStore'
+import { useAuthStore } from '../../store/useAuthStore'
+import { useEffect } from 'react'
 
 const Home = () => {
   const navigate = useNavigate()
 
-  // Add claims made by the employee
-  const claims = [
-    {
-      "amount": 10000,
-      "approvalMode": "AUTO",
-      "budgetId": 1,
-      "category": "MEALS",
-      "comment": null,
-      "departmentId": 1,
-      "departmentName": "Engineering",
-      "employeeEmail": "vihaan.joshi@gmail.com",
-      "employeeId": 8,
-      "employeeName": "Vihaan Joshi",
-      "id": 4,
-      "proofUrl": "https://example.com/proof.jpg",
-      "status": "REJECTED"
-    },
-    {
-      "amount": 100000,
-      "approvalMode": "AUTO",
-      "budgetId": 1,
-      "category": "MEALS",
-      "comment": "This is a travel claim for a business trip.",
-      "departmentId": 1,
-      "departmentName": "Engineering",
-      "employeeEmail": "vihaan.joshi@gmail.com",
-      "employeeId": 8,
-      "employeeName": "Vihaan Joshi",
-      "id": 6,
-      "proofUrl": "https://example.com/proof.jpg",
-      "status": "REJECTED"
-    },
-    {
-      "amount": 10000,
-      "approvalMode": "MANAGER_AND_ADMIN",
-      "budgetId": 1,
-      "category": "TRAVEL",
-      "comment": "This is a travel claim for a business trip.",
-      "departmentId": 1,
-      "departmentName": "Engineering",
-      "employeeEmail": "vihaan.joshi@gmail.com",
-      "employeeId": 8,
-      "employeeName": "Vihaan Joshi",
-      "id": 1,
-      "proofUrl": "https://example.com/proof.jpg",
-      "status": "APPROVED"
-    },
-    {
-      "amount": 10000,
-      "approvalMode": "MANAGER_AND_ADMIN",
-      "budgetId": 1,
-      "category": "TRAVEL",
-      "comment": "This is a travel claim for a business trip.",
-      "departmentId": 1,
-      "departmentName": "Engineering",
-      "employeeEmail": "vihaan.joshi@gmail.com",
-      "employeeId": 8,
-      "employeeName": "Vihaan Joshi",
-      "id": 2,
-      "proofUrl": "https://example.com/proof.jpg",
-      "status": "APPROVED"
-    },
-    {
-      "amount": 10000,
-      "approvalMode": "MANAGER_AND_ADMIN",
-      "budgetId": 1,
-      "category": "TRAVEL",
-      "comment": "This is a travel claim for a business trip.",
-      "departmentId": 1,
-      "departmentName": "Engineering",
-      "employeeEmail": "vihaan.joshi@gmail.com",
-      "employeeId": 8,
-      "employeeName": "Vihaan Joshi",
-      "id": 3,
-      "proofUrl": "https://example.com/proof.jpg",
-      "status": "PAID"
-    },
-    {
-      "amount": 10000,
-      "approvalMode": "MANAGER_AND_ADMIN",
-      "budgetId": 1,
-      "category": "TRAVEL",
-      "comment": "This is a travel claim for a business trip.",
-      "departmentId": 1,
-      "departmentName": "Engineering",
-      "employeeEmail": "vihaan.joshi@gmail.com",
-      "employeeId": 8,
-      "employeeName": "Vihaan Joshi",
-      "id": 7,
-      "proofUrl": "https://example.com/proof.jpg",
-      "status": "PAID"
-    },
-    {
-      "amount": 10000,
-      "approvalMode": "MANAGER_AND_ADMIN",
-      "budgetId": 1,
-      "category": "MEALS",
-      "comment": "This is a travel claim for a business trip.",
-      "departmentId": 1,
-      "departmentName": "Engineering",
-      "employeeEmail": "vihaan.joshi@gmail.com",
-      "employeeId": 8,
-      "employeeName": "Vihaan Joshi",
-      "id": 8,
-      "proofUrl": "https://example.com/proof.jpg",
-      "status": "PAID"
-    },
-    {
-      "amount": 100,
-      "approvalMode": "AUTO",
-      "budgetId": 1,
-      "category": "MEALS",
-      "comment": "This is a travel claim for a business trip.",
-      "departmentId": 1,
-      "departmentName": "Engineering",
-      "employeeEmail": "vihaan.joshi@gmail.com",
-      "employeeId": 8,
-      "employeeName": "Vihaan Joshi",
-      "id": 9,
-      "proofUrl": "https://example.com/proof.jpg",
-      "status": "PAID"
-    },
-    {
-      "amount": 10000,
-      "approvalMode": "MANAGER_AND_ADMIN",
-      "budgetId": 1,
-      "category": "MEALS",
-      "comment": "This is a travel claim for a business trip.",
-      "departmentId": 1,
-      "departmentName": "Engineering",
-      "employeeEmail": "vihaan.joshi@gmail.com",
-      "employeeId": 8,
-      "employeeName": "Vihaan Joshi",
-      "id": 5,
-      "proofUrl": "https://example.com/proof.jpg",
-      "status": "PAID"
-    },
-    {
-      "amount": 1000,
-      "approvalMode": "MANAGER",
-      "budgetId": 1,
-      "category": "MEALS",
-      "comment": "This is a travel claim for a business trip.",
-      "departmentId": 1,
-      "departmentName": "Engineering",
-      "employeeEmail": "vihaan.joshi@gmail.com",
-      "employeeId": 8,
-      "employeeName": "Vihaan Joshi",
-      "id": 10,
-      "proofUrl": "https://example.com/proof.jpg",
-      "status": "PAID"
-    },
-    {
-      "amount": 2000,
-      "approvalMode": "MANAGER_AND_ADMIN",
-      "budgetId": 1,
-      "category": "MEALS",
-      "comment": "This is a travel claim for a business trip.",
-      "departmentId": 1,
-      "departmentName": "Engineering",
-      "employeeEmail": "vihaan.joshi@gmail.com",
-      "employeeId": 8,
-      "employeeName": "Vihaan Joshi",
-      "id": 11,
-      "proofUrl": "https://example.com/proof.jpg",
-      "status": "PAID"
-    },
-  ]
+  const {authUser} = useAuthStore()
+
+  const {claims, getClaimsByEmployee} = useClaimStore()
+
+  useEffect(() => {
+    console.log(authUser)
+    getClaimsByEmployee(authUser.id)
+  }, [authUser])
+
+  useEffect(() => {
+    console.log(claims)
+  }, [claims])
 
   return (
     <div className='flex flex-col m-6'>
@@ -188,7 +35,7 @@ const Home = () => {
         </div>
       </div>
 
-      <div className='w-full border-2 p-10'>
+      <div className='w-full p-10'>
         {
           claims && 
           (
@@ -225,7 +72,9 @@ const Home = () => {
 
         {
           !claims && (
-            <h1>No claims made</h1>
+            <div className='border-2 h-[10vh]'>
+              <h1>No claims made</h1>
+            </div>
           )
         }
       </div>
