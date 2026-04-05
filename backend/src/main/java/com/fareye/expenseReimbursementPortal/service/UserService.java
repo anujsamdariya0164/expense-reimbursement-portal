@@ -9,12 +9,17 @@ import com.fareye.expenseReimbursementPortal.model.entity.User;
 import com.fareye.expenseReimbursementPortal.repository.DepartmentRepository;
 import com.fareye.expenseReimbursementPortal.repository.RoleRepository;
 import com.fareye.expenseReimbursementPortal.repository.UserRepository;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
 
     private final RoleRepository roleRepository;
@@ -23,11 +28,14 @@ public class UserService {
 
     private final UserMapper userMapper;
 
+    private final PasswordEncoder passwordEncoder;
+
     public UserService(UserRepository userRepository, RoleRepository roleRepository, DepartmentRepository departmentRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.departmentRepository = departmentRepository;
         this.userMapper = userMapper;
+        this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     public List<UserResponse> getAllUsers() {
@@ -42,40 +50,46 @@ public class UserService {
         return userMapper.toUserResponse(userById);
     }
 
+    public UserResponse getUserByEmail(String email) {
+        return userMapper.toUserResponse(userRepository.findUserByEmail(email).orElseThrow(() -> new RuntimeException("User with the email ID: " + email + " not found!")));
+    }
+
     public UserResponse createUser(CreateUserRequest createUserRequest) {
-        if (createUserRequest.getRoleId() == 1) {
-            throw new RuntimeException("Permission denied!");
-        }
+//        if (createUserRequest.getRoleId() == 1) {
+//            throw new RuntimeException("Permission denied!");
+//        }
 
         Role roleById = roleRepository.findById(createUserRequest.getRoleId()).orElseThrow(() -> new RuntimeException("Role with ID :" + createUserRequest.getRoleId() + " does not exists!"));
 
-        Department departmentById = departmentRepository.findById(createUserRequest.getDepartmentId()).orElseThrow(() -> new RuntimeException("Department with ID: " + createUserRequest.getDepartmentId() + " does not exists!"));
+//        Department departmentById = departmentRepository.findById(createUserRequest.getDepartmentId()).orElseThrow(() -> new RuntimeException("Department with ID: " + createUserRequest.getDepartmentId() + " does not exists!"));
+//
+//        User managerById = (departmentById.getManager() != null) ?
+//                userRepository.findById(departmentById.getManager().getId()).orElseThrow(() -> new RuntimeException("Manager with ID: " + departmentById.getManager().getId() + " does not exists!")) :
+//                null;
 
-        User managerById = (departmentById.getManager() != null) ?
-                userRepository.findById(departmentById.getManager().getId()).orElseThrow(() -> new RuntimeException("Manager with ID: " + departmentById.getManager().getId() + " does not exists!")) :
-                null;
+//        if (createUserRequest.getRoleId() == 2) {
+//            if (departmentById.getManager() != null) {
+//                throw new RuntimeException("Department with ID: " + createUserRequest.getDepartmentId() + " already has a manager assigned!");
+//            }
+//        }
 
-        if (createUserRequest.getRoleId() == 2) {
-            if (departmentById.getManager() != null) {
-                throw new RuntimeException("Department with ID: " + createUserRequest.getDepartmentId() + " already has a manager assigned!");
-            }
-        }
+        String encodedPassword = passwordEncoder.encode(createUserRequest.getPassword());
 
         User newUser = User.builder()
                 .name(createUserRequest.getName())
                 .email(createUserRequest.getEmail())
-                .password(createUserRequest.getPassword())
+                .password(encodedPassword)
                 .role(roleById)
-                .department(departmentById)
-                .manager(managerById)
+                .department(null)
+                .manager(null)
                 .build();
 
         User savedUser = userRepository.save(newUser);
 
-        if (createUserRequest.getRoleId() == 2) {
-            departmentById.setManager(savedUser);
-            departmentRepository.save(departmentById);
-        }
+//        if (createUserRequest.getRoleId() == 2) {
+//            departmentById.setManager(savedUser);
+//            departmentRepository.save(departmentById);
+//        }
 
         return userMapper.toUserResponse(savedUser);
     }
@@ -85,5 +99,16 @@ public class UserService {
 
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findUserByEmail(email).orElseThrow(() -> new RuntimeException("User with email: " + email + " does not exists!"));
+
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(user.getEmail())
+                .password(user.getPassword())
+                .authorities(user.getRole().getRole())
+                .build();
     }
 }
