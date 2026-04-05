@@ -14,10 +14,10 @@ const UpdateClaimStatus = () => {
     "employeeName": "Vihaan Joshi",
     "id": 4,
     "proofUrl": "https://example.com/proof.jpg",
-    "status": "REJECTED"
+    "status": "SUBMITTED"
   }
 
-  const statuses = ['REJECTED', 'DRAFT', 'SUBMITTED', 'APPROVED', 'PAID']
+  const statuses = ['REJECTED', 'SUBMITTED', 'APPROVED', 'PAID']
 
   const [status, setStatus] = useState(claim.status)
 
@@ -68,7 +68,7 @@ const UpdateClaimStatus = () => {
 
           <h3>
             <span className='font-bold'>Proof URL:</span>{" "}
-            {claim?.proofUrl}
+            <a href={claim?.proofUrl} target='_blank'>{claim?.proofUrl}</a>
           </h3>
 
           <div className="flex gap-2 items-center">
@@ -85,6 +85,10 @@ const UpdateClaimStatus = () => {
                 ))}
               </select>
           </div>
+
+          {claim.status === 'REJECTED' || claim.status === 'PAID' ? (
+            <p className='text-red-600'>Paid/Rejected claims cannot be updated!</p>
+          ): (<></>)}
 
           <button
             disabled={claim.status === 'REJECTED' || claim.status === 'PAID'}

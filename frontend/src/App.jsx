@@ -1,6 +1,6 @@
 import { Toaster } from "react-hot-toast"
 import { createBrowserRouter, createRoutesFromElements, Navigate, Route, RouterProvider } from "react-router-dom"
-import { AddClaim, Home, Layout, Login, ManagerDashboard, PageNotFound, SignUp, UpdateClaimStatus } from "./components"
+import { AddClaim, AddEmployee, AdminDashboard, AssignManager, DepartmentDetails, EmployeeDetails, Home, Layout, Login, ManagerDashboard, PageNotFound, SignUp, UpdateClaimStatus } from "./components"
 
 function App() {
   const authUser = {
@@ -20,6 +20,17 @@ function App() {
           <Route path=":id" element={<UpdateClaimStatus/>} />
         </Route>
         <Route path="dashboard" element={<ManagerDashboard/>} />
+        <Route path="admin">
+          <Route path="dashboard">
+            <Route path="" element={<AdminDashboard/>} />
+            <Route path="department/:id" element={<DepartmentDetails/>} />
+            <Route path="employee">
+              <Route path="add/:departmentId" element={<AddEmployee />} />
+              <Route path=":id" element={<EmployeeDetails/>} />
+            </Route>
+            <Route path="manager/assign/:departmentId" element={<AssignManager/>} />
+          </Route>
+        </Route>
         <Route path="*" element={authUser ? <PageNotFound/> : <Navigate to='/login'/>} />
       </Route>
     )

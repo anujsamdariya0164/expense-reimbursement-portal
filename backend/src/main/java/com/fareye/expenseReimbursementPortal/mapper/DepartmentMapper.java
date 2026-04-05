@@ -25,6 +25,7 @@ public class DepartmentMapper {
                                                                .id(employee.getId())
                                                                .name(employee.getName())
                                                                .email(employee.getEmail())
+                                                               .role(employee.getRole().getRole())
                                                                .build()
                         ).toList()
                 )

@@ -7,6 +7,11 @@ import Footer from "./Footer/Footer";
 import AddClaim from "./AddClaim/AddClaim";
 import ManagerDashboard from "./ManagerDashboard/ManagerDashboard";
 import UpdateClaimStatus from "./UpdateClaimStatus/UpdateClaimStatus";
+import AdminDashboard from "./AdminDashboard/AdminDashboard";
+import DepartmentDetails from "./DepartmentDetails/DepartmentDetails";
+import AddEmployee from "./AddEmployee/AddEmployee";
+import AssignManager from "./AssignManager/AssignManager";
+import EmployeeDetails from "./EmployeeDetails/EmployeeDetails";
 import PageNotFound from "./PageNotFound/PageNotFound";
 
 export {
@@ -19,5 +24,10 @@ export {
     AddClaim,
     ManagerDashboard,
     UpdateClaimStatus,
+    AdminDashboard,
+    DepartmentDetails,
+    AddEmployee,
+    AssignManager,
+    EmployeeDetails,
     PageNotFound,
 };

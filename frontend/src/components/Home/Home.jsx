@@ -210,7 +210,7 @@ const Home = () => {
                   claims.map((claim, index) => (
                     <tr key={index} className='grid grid-cols-6 p-10 text-center border-2'>
                       <td>{claim.id}</td>
-                      <td>{claim.amount}</td>
+                      <td>${claim.amount}</td>
                       <td>{claim.category}</td>
                       <td>{claim.comment ?? '-'}</td>
                       <td>{claim.proofUrl ?? '-'}</td>

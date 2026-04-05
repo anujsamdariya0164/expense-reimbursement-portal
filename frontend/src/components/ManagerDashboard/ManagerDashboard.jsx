@@ -208,8 +208,8 @@ const ManagerDashboard = () => {
     return (
         <div className='flex flex-col m-6'>
             <div>
-                <h1 className='font-bold text-3xl'>
-                    Department Details:
+                <h1 className='font-bold text-3xl underline'>
+                    Department Details
                 </h1>
             </div>
 
@@ -227,7 +227,7 @@ const ManagerDashboard = () => {
 
             <div className='mb-5 flex justify-between'>
                 <div>
-                    <h1 className='font-bold text-3xl'>Manage Claims</h1>
+                    <h1 className='font-bold text-3xl underline'>Manage Claims</h1>
                     <h3>Click the status button at the rightmost column to update any claim's status (it will not work for statuses that are already paid or rejected)</h3>
                 </div>
             </div>
@@ -253,7 +253,7 @@ const ManagerDashboard = () => {
                             claims.map((claim, index) => (
                                 <tr key={index} className='grid grid-cols-5 p-5 text-center border-2'>
                                 <td>{claim.id}</td>
-                                <td>{claim.amount}</td>
+                                <td>${claim.amount}</td>
                                 <td>{claim.category}</td>
                                 <td>{claim.proofUrl ?? '-'}</td>
                                 <td>

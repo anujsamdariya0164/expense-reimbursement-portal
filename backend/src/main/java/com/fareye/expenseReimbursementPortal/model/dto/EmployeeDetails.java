@@ -11,4 +11,6 @@ public class EmployeeDetails {
     public String name;
 
     public String email;
+
+    public String role;
 }
