@@ -12,6 +12,7 @@ import DepartmentDetails from "./DepartmentDetails/DepartmentDetails";
 import AddEmployee from "./AddEmployee/AddEmployee";
 import AssignManager from "./AssignManager/AssignManager";
 import EmployeeDetails from "./EmployeeDetails/EmployeeDetails";
+import AddBudget from "./AddBudget/AddBudget";
 import PageNotFound from "./PageNotFound/PageNotFound";
 
 export {
@@ -29,5 +30,6 @@ export {
     AddEmployee,
     AssignManager,
     EmployeeDetails,
+    AddBudget,
     PageNotFound,
 };

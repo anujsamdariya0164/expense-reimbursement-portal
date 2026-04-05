@@ -6,6 +6,7 @@ import com.fareye.expenseReimbursementPortal.model.dto.UserResponse;
 import com.fareye.expenseReimbursementPortal.model.entity.User;
 import com.fareye.expenseReimbursementPortal.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,7 +36,8 @@ public class AuthController {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            request.getSession(true);
+            HttpSession session = request.getSession(true);
+            session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
 
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 

@@ -258,6 +258,17 @@ const DepartmentDetails = () => {
                 </button>
               ) : (<></>)
             }
+
+            {
+              department.budgetId === null ? (
+                <button 
+                  className='font-bold text-2xl cursor-pointer border-white border-2 p-3 rounded hover:bg-white hover:text-[#303030] flex items-end h-auto' 
+                  onClick={() => navigate(`/admin/dashboard/budget/add/${department.id}`)}
+                >
+                  <h1>Add Budget +</h1>
+                </button>
+              ) : (<></>)
+            }
           </div>
         </div>
 

@@ -1,6 +1,6 @@
 import { Toaster } from "react-hot-toast"
 import { createBrowserRouter, createRoutesFromElements, Navigate, Route, RouterProvider } from "react-router-dom"
-import { AddClaim, AddEmployee, AdminDashboard, AssignManager, DepartmentDetails, EmployeeDetails, Home, Layout, Login, ManagerDashboard, PageNotFound, SignUp, UpdateClaimStatus } from "./components"
+import { AddBudget, AddClaim, AddEmployee, AdminDashboard, AssignManager, DepartmentDetails, EmployeeDetails, Home, Layout, Login, ManagerDashboard, PageNotFound, SignUp, UpdateClaimStatus } from "./components"
 
 function App() {
   const authUser = {
@@ -28,6 +28,7 @@ function App() {
               <Route path="add/:departmentId" element={<AddEmployee />} />
               <Route path=":id" element={<EmployeeDetails/>} />
             </Route>
+            <Route path="budget/add/:id" element={<AddBudget/>} />
             <Route path="manager/assign/:departmentId" element={<AssignManager/>} />
           </Route>
         </Route>
