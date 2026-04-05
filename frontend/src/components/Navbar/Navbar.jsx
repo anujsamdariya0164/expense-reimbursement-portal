@@ -1,12 +1,11 @@
 import { useNavigate } from "react-router-dom"
+import { useStore } from "../../store/useStore"
+import { useEffect } from "react"
 
 const Navbar = () => {
     const navigate = useNavigate()
 
-    const authUser = {
-        id: 1,
-        name: "Anuj Samdariya"
-    }
+    const {authUser} = useStore()
 
     const handleLogout = async (e) => {
         e.preventDefault()
