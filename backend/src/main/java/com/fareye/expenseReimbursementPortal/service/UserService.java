@@ -55,23 +55,23 @@ public class UserService implements UserDetailsService {
     }
 
     public UserResponse createUser(CreateUserRequest createUserRequest) {
-//        if (createUserRequest.getRoleId() == 1) {
-//            throw new RuntimeException("Permission denied!");
-//        }
+        if (createUserRequest.getRoleId() == 1) {
+            throw new RuntimeException("Permission denied!");
+        }
 
         Role roleById = roleRepository.findById(createUserRequest.getRoleId()).orElseThrow(() -> new RuntimeException("Role with ID :" + createUserRequest.getRoleId() + " does not exists!"));
 
-//        Department departmentById = departmentRepository.findById(createUserRequest.getDepartmentId()).orElseThrow(() -> new RuntimeException("Department with ID: " + createUserRequest.getDepartmentId() + " does not exists!"));
-//
-//        User managerById = (departmentById.getManager() != null) ?
-//                userRepository.findById(departmentById.getManager().getId()).orElseThrow(() -> new RuntimeException("Manager with ID: " + departmentById.getManager().getId() + " does not exists!")) :
-//                null;
+        Department departmentById = departmentRepository.findById(createUserRequest.getDepartmentId()).orElseThrow(() -> new RuntimeException("Department with ID: " + createUserRequest.getDepartmentId() + " does not exists!"));
 
-//        if (createUserRequest.getRoleId() == 2) {
-//            if (departmentById.getManager() != null) {
-//                throw new RuntimeException("Department with ID: " + createUserRequest.getDepartmentId() + " already has a manager assigned!");
-//            }
-//        }
+        User managerById = (departmentById.getManager() != null) ?
+                userRepository.findById(departmentById.getManager().getId()).orElseThrow(() -> new RuntimeException("Manager with ID: " + departmentById.getManager().getId() + " does not exists!")) :
+                null;
+
+        if (createUserRequest.getRoleId() == 2) {
+            if (departmentById.getManager() != null) {
+                throw new RuntimeException("Department with ID: " + createUserRequest.getDepartmentId() + " already has a manager assigned!");
+            }
+        }
 
         String encodedPassword = passwordEncoder.encode(createUserRequest.getPassword());
 
@@ -86,10 +86,10 @@ public class UserService implements UserDetailsService {
 
         User savedUser = userRepository.save(newUser);
 
-//        if (createUserRequest.getRoleId() == 2) {
-//            departmentById.setManager(savedUser);
-//            departmentRepository.save(departmentById);
-//        }
+        if (createUserRequest.getRoleId() == 2) {
+            departmentById.setManager(savedUser);
+            departmentRepository.save(departmentById);
+        }
 
         return userMapper.toUserResponse(savedUser);
     }
