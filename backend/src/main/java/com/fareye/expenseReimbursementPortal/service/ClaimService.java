@@ -74,6 +74,7 @@ public class ClaimService {
     }
 
     public ClaimResponse createClaim(CreateClaimRequest createClaimRequest) {
+        System.out.println("Create claim service function!");
         User employeeById = null;
         if (createClaimRequest.getEmployeeId() != null) {
             employeeById = userRepository.findById(createClaimRequest.getEmployeeId()).orElseThrow(() -> new RuntimeException("Employee with ID: " + createClaimRequest.getEmployeeId() + " does not exists!"));
@@ -96,7 +97,7 @@ public class ClaimService {
                 .proofUrl(createClaimRequest.getProofUrl())
                 .status(Claim.STATUSES.SUBMITTED)
                 .category(createClaimRequest.getCategory())
-                .approvalMode(createClaimRequest.getApprovalMode())
+                .approvalMode(Claim.APPROVAL_MODE.AUTO)
                 .comment(createClaimRequest.getComment())
                 .budget(budgetById)
                 .employee(employeeById)
@@ -109,10 +110,10 @@ public class ClaimService {
                 (newClaim.getAmount() + newClaim.getBudget().getAmount() > newClaim.getBudget().getLimit())
         ) {
             newClaim.setStatus(Claim.STATUSES.REJECTED);
+            newClaim.setApprovalMode(Claim.APPROVAL_MODE.AUTO);
         } else if (newClaim.getAmount() <= 100) {
             newClaim.setApprovalMode(Claim.APPROVAL_MODE.AUTO);
             newClaim.setStatus(Claim.STATUSES.APPROVED);
-            budgetService.updateBudgetById(newClaim.getBudget().getId(), UpdateBudgetRequest.builder().amount(newClaim.getAmount()).build());
         } else if (newClaim.getAmount() <= 1000) {
             newClaim.setApprovalMode(Claim.APPROVAL_MODE.MANAGER);
         } else {

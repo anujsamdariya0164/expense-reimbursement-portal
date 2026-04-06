@@ -13,7 +13,5 @@ public class CreateClaimRequest {
 
     private String proofUrl;
 
-    private Claim.APPROVAL_MODE approvalMode;
-
     private Long employeeId;
 }

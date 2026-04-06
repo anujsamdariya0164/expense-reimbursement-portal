@@ -53,7 +53,7 @@ const Home = () => {
 
               <tbody>
                 {
-                  claims && claims.length > 1 && 
+                  claims && claims.length > 0 && 
                   claims.map((claim, index) => (
                     <tr key={index} className='grid grid-cols-6 p-10 text-center border-2'>
                       <td>{claim.id}</td>

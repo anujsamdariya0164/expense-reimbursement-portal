@@ -61,12 +61,14 @@ export const useClaimStore = create((set, get) => ({
             } else {
                 toast.success('Claim created successfully!')
             }
+            return true
         } catch (error) {
             set({claim: {}, error: error.response.data.message})
             console.log(error.response.data)
+            return false
+        } finally {
+            set({isLoading: false})
         }
-
-        set({isLoading: false})
     },
 
     updateStatus: async (id, formData) => {
@@ -80,8 +82,8 @@ export const useClaimStore = create((set, get) => ({
             set({claim: {}, error: error.response.data.message})
             toast.error(error.response.data.message)
             console.log(error.response.data)
+        } finally {
+            set({isLoading: false})
         }
-
-        set({isLoading: false})
     }
 }))

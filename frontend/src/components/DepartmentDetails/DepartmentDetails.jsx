@@ -20,11 +20,6 @@ const DepartmentDetails = () => {
     getClaimsByDepartment(departmentId)
   }, [])
 
-  useEffect(() => {
-    console.log(department)
-    console.log(claims)
-  }, [department, claims])
-
   return (
     <div className='flex flex-col m-6 gap-5'>
       <div>

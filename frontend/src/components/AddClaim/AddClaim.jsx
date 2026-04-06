@@ -6,8 +6,6 @@ import { useAuthStore } from '../../store/useAuthStore'
 const AddClaim = () => {
     const categories = ['TRAVEL', 'TRANSPORTATION', 'MEALS', 'ENTERTAINMENT', 'SUPPLIES', 'INTERNET', 'TRAINING']
 
-    const approvalModes = ['AUTO', 'MANAGER', 'MANAGER_AND_ADMIN']
-
     const navigate = useNavigate()
 
     const {createClaim} = useClaimStore()
@@ -19,7 +17,6 @@ const AddClaim = () => {
         comment: '',
         proofUrl: '',
         category: '',
-        approvalMode: '',
         employeeId: ''
         // employeeId to come from current session
     })
@@ -37,9 +34,9 @@ const AddClaim = () => {
 
         formData.employeeId = authUser.id
 
-        await createClaim(formData)
+        const isCreated = await createClaim(formData)
 
-        navigate('/')
+        if (isCreated) navigate(-1)
 
         console.log(formData)
     }
@@ -64,24 +61,6 @@ const AddClaim = () => {
                     <div className='flex gap-2 justify-between'>
                         <label htmlFor="">Comment:</label>
                         <textarea type="text" name='comment' className='border border-white text-white' value={formData.comment} onChange={(e) => handleChange(e.target.name, e.target.value)} />
-                    </div>
-
-                    <div className='flex gap-2 justify-between'>
-                        <h3 className='font-bold'>Select Approval Mode:</h3>
-
-                        <select
-                            name='approvalMode'
-                            value={formData.approvalMode}
-                            onChange={(e) => handleChange(e.target.name, e.target.value)}
-                            className="bg-[#303030] text-white border-white border rounded-sm"
-                        >
-                            <option value="">Select Approval Mode</option>
-                            {approvalModes?.map((approvalMode, index) => (
-                                <option key={index} value={approvalMode}>
-                                    {approvalMode}
-                                </option>
-                            ))}
-                        </select>
                     </div>
 
                     <div className='flex gap-2 justify-between'>
