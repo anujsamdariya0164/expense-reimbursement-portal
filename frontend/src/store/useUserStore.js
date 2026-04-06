@@ -29,11 +29,14 @@ export const useUserStore = create((set, get) => ({
             const response = await axiosInstance.post(`/users`, formData)
             set({user: response.data, error: null})
             toast.success("User created successfully!")
+            return true
         } catch (error) {
             set({user: null, error: error.response.data.message})
             console.log(error.response.data)
+            toast.error(error.response.data.message)
+            return false
+        } finally {
+            set({isLoading: false})
         }
-
-        set({isLoading: false})
     },
 }))

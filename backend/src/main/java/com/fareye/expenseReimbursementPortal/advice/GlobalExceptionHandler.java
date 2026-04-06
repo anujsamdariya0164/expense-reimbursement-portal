@@ -1,8 +1,11 @@
 package com.fareye.expenseReimbursementPortal.advice;
 
+import com.fareye.expenseReimbursementPortal.exception.EmailAlreadyExistsException;
+import com.fareye.expenseReimbursementPortal.exception.ResourceNotFoundException;
 import com.fareye.expenseReimbursementPortal.model.dto.ExceptionResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -10,6 +13,7 @@ import org.springframework.security.authentication.InternalAuthenticationService
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 
 @RestControllerAdvice
@@ -40,22 +44,53 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleResourceNotFound(ResourceNotFoundException exception, HttpServletRequest request) {
+        ExceptionResponse response = ExceptionResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.NOT_FOUND.value())
+                .message(exception.getMessage())
+                .path(request.getRequestURI())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ExceptionResponse> handleAccessDenied(
+            AccessDeniedException exception, HttpServletRequest request
+    ) {
+        ExceptionResponse response = ExceptionResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.FORBIDDEN.value())
+                .message(exception.getMessage())
+                .path(request.getRequestURI())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ExceptionResponse> handleDataIntegrityViolation(
             DataIntegrityViolationException exception, HttpServletRequest request
     ) {
-        String message = exception.getMessage();
-        if (message.contains("ukj6cwks7xecs5jov19ro8ge3qk")) {
-            message = "Department with this name already exists!";
-        } else if (message.contains("uk6dotkott2kjsp8vw4d0m25fb7")) {
-            message = "User with this email already exists!";
-        }
-
         ExceptionResponse response = ExceptionResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.CONFLICT.value())
-                .message(message)
+                .message(exception.getMessage())
                 .path(request.getRequestURI())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<ExceptionResponse> handleEmailAlreadyExists(EmailAlreadyExistsException exception, HttpServletRequest request) {
+        ExceptionResponse response = ExceptionResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.CONFLICT.value())
+                .path(request.getRequestURI())
+                .message(exception.getMessage())
                 .build();
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
@@ -65,10 +100,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ExceptionResponse> handleGeneralException(Exception exception, HttpServletRequest request) {
         if (exception.getMessage().contains("InternalAuthenticationServiceException")) {
             return handleAuthException(new InternalAuthenticationServiceException("User with the given email does not exists!"), request);
-        } else if (exception.getMessage().contains("BadCredentialsException")) {
-            return handleIncorrectPassword(new BadCredentialsException("Incorrect password!"), request);
-        } else if (exception.getMessage().contains("duplicate key value violates unique constraint")) {
-            return handleDataIntegrityViolation(new DataIntegrityViolationException(exception.getMessage()), request);
         }
 
         ExceptionResponse response = ExceptionResponse.builder()

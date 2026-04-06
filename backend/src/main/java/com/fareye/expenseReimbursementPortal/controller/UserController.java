@@ -1,5 +1,7 @@
 package com.fareye.expenseReimbursementPortal.controller;
 
+import com.fareye.expenseReimbursementPortal.exception.EmailAlreadyExistsException;
+import com.fareye.expenseReimbursementPortal.exception.ResourceNotFoundException;
 import com.fareye.expenseReimbursementPortal.model.dto.CreateUserRequest;
 import com.fareye.expenseReimbursementPortal.model.dto.UserResponse;
 import com.fareye.expenseReimbursementPortal.model.entity.User;
@@ -8,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @RestController
@@ -30,7 +33,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserResponse> createUser(@RequestBody CreateUserRequest createUserRequest) {
+    public ResponseEntity<UserResponse> createUser(@RequestBody CreateUserRequest createUserRequest) throws AccessDeniedException, ResourceNotFoundException, EmailAlreadyExistsException {
         return ResponseEntity.status(HttpStatus.OK).body(userService.createUser(createUserRequest));
     }
 

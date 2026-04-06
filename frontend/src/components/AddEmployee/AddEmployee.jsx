@@ -25,11 +25,9 @@ const AddEmployee = () => {
     const handleSubmit = async (event) => {
       event.preventDefault()
 
-      await createUser(formData)
-
-      console.log(formData)
-
-      navigate(`/admin/dashboard/department/${param.departmentId}`)
+      const isCreated = await createUser(formData)
+      
+      if (isCreated) navigate(-1)
     }
 
   return (
