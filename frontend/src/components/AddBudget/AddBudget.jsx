@@ -25,7 +25,7 @@ const AddBudget = () => {
 
       await createBudget(formData)
 
-      navigate(`/admin/dashboard/department/${id}`)
+      navigate(-1)
 
       console.log(formData)
     }

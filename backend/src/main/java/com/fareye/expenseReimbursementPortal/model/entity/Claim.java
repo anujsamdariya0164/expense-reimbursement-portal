@@ -49,6 +49,9 @@ public class Claim {
     @Column(name = "comment")
     private String comment;
 
+    @Column(name = "stage")
+    private Integer stage;
+
     @ManyToOne
     @JoinColumn(name = "budget_id")
     private Budget budget;

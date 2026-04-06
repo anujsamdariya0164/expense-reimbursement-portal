@@ -27,18 +27,15 @@ const Navbar = () => {
 
         <div className='text-xl font-semibold flex gap-5 items-center'>
             {authUser && (
-                <h2>Hi, <span className='text-green-400'>{authUser.name.split(' ')[0] || 'User'}</span></h2>
+                <div className="flex gap-2">
+                    <h2>Hi, <span className='text-green-400'>{authUser.name.split(' ')[0] || 'User'}</span></h2>
+                    <h2>ROLE: <span className='text-green-400'>{authUser.role}</span></h2>
+                </div>
             )}
             
             
             {authUser && (
                 <>
-                    {
-                        authUser.role === 'ADMIN' && (
-                            <button onClick={() => navigate('/dashboard')} className='cursor-pointer bg-gray-800 hover:bg-gray-700 text-white px-2 py-1 rounded'>Dashboard</button>
-                        )
-                    }
-
                     <button className='cursor-pointer bg-red-600 hover:bg-red-400 text-white px-2 py-1 rounded' onClick={handleLogout}>Logout</button>
                 </>
             )}

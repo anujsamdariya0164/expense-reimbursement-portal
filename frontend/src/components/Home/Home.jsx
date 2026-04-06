@@ -53,7 +53,7 @@ const Home = () => {
 
               <tbody>
                 {
-                  claims && 
+                  claims && claims.length > 1 && 
                   claims.map((claim, index) => (
                     <tr key={index} className='grid grid-cols-6 p-10 text-center border-2'>
                       <td>{claim.id}</td>
@@ -71,8 +71,8 @@ const Home = () => {
         }
 
         {
-          !claims && (
-            <div className='border-2 h-[10vh]'>
+          (!claims || claims.length === 0)&& (
+            <div className='border-2 h-[10vh] flex items-center justify-center'>
               <h1>No claims made</h1>
             </div>
           )

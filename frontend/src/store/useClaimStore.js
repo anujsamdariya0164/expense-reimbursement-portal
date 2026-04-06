@@ -56,7 +56,11 @@ export const useClaimStore = create((set, get) => ({
         try {
             const response = await axiosInstance.post(`/claims`, formData)
             set({claim: response.data, error: null})
-            toast.success('Claim created successfully!')
+            if (response.data.status === 'REJECTED') {
+                toast.success('Claim auto-rejected!')
+            } else {
+                toast.success('Claim created successfully!')
+            }
         } catch (error) {
             set({claim: {}, error: error.response.data.message})
             console.log(error.response.data)
@@ -74,6 +78,7 @@ export const useClaimStore = create((set, get) => ({
             toast.success('Status updated successfully!')
         } catch (error) {
             set({claim: {}, error: error.response.data.message})
+            toast.error(error.response.data.message)
             console.log(error.response.data)
         }
 

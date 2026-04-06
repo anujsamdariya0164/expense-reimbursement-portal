@@ -13,6 +13,9 @@ import com.fareye.expenseReimbursementPortal.repository.BudgetRepository;
 import com.fareye.expenseReimbursementPortal.repository.ClaimRepository;
 import com.fareye.expenseReimbursementPortal.repository.DepartmentRepository;
 import com.fareye.expenseReimbursementPortal.repository.UserRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -98,6 +101,7 @@ public class ClaimService {
                 .budget(budgetById)
                 .employee(employeeById)
                 .assignedDepartment(departmentById)
+                .stage(0)
                 .build();
 
         if (
@@ -178,17 +182,40 @@ public class ClaimService {
             budgetService.updateBudgetById(claimById.getBudget().getId(), updateBudgetRequest);
         }
 
-        claimById.setStatus(status);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getName().equals("anonymousUser")) {
+            throw new RuntimeException("User is not authenticated!");
+        }
+
+        User user = userRepository.findUserByEmail(authentication.getName()).orElseThrow(() -> new RuntimeException("User with email: " + authentication.getName() + " does not exists!"));
+
+        if (user.getRole().getRole().equals("EMPLOYEE")) {
+            throw new RuntimeException("Employee cannot update any claim!");
+        }
+
+        if (user.getRole().getRole().equals("MANAGER") && status.equals(Claim.STATUSES.PAID)) {
+            throw new RuntimeException("Only admin can perform final disbursement!");
+        }
+
+        if (user.getRole().getRole().equals("ADMIN") || (user.getRole().getRole().equals("MANAGER") && claimById.getApprovalMode().equals(Claim.APPROVAL_MODE.MANAGER))) {
+            claimById.setStatus(status);
+        }
+
+        if (user.getRole().getRole().equals("MANAGER") && claimById.getApprovalMode().equals(Claim.APPROVAL_MODE.MANAGER_AND_ADMIN) && claimById.getStage() == 1) {
+            throw new RuntimeException("Admin approval required!");
+        } else if (user.getRole().getRole().equals("MANAGER") && claimById.getApprovalMode().equals(Claim.APPROVAL_MODE.MANAGER_AND_ADMIN) && claimById.getStage() == 0) {
+            claimById.setStage(1);
+        }
 
         Claim updatedClaim = claimRepository.save(claimById);
 
-//        CreateAuditLogRequest createAuditLogRequest = CreateAuditLogRequest.builder()
-//                .action(updatedClaim.getStatus())
-//                .actorId(null) // take out the user from current session and fill
-//                .claimId(updatedClaim.getId())
-//                .build();
-//
-//        auditLogService.createAuditLog(createAuditLogRequest);
+        CreateAuditLogRequest createAuditLogRequest = CreateAuditLogRequest.builder()
+                .action(updatedClaim.getStatus())
+                .actorId(user.getId()) // take out the user from current session and fill
+                .claimId(updatedClaim.getId())
+                .build();
+
+        auditLogService.createAuditLog(createAuditLogRequest);
 
         return claimMapper.toClaimResponse(updatedClaim);
     }
