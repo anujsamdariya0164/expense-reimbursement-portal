@@ -27,4 +27,6 @@ public class UserResponse {
     private String managerName;
 
     private String managerEmail;
+
+    private Long budgetAmount;
 }

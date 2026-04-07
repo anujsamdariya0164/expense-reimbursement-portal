@@ -21,6 +21,7 @@ public class UserMapper {
                 .managerId(user.getManager() == null ? null : user.getManager().getId())
                 .managerName(user.getManager() == null ? null : user.getManager().getName())
                 .managerEmail(user.getManager() == null ? null : user.getManager().getEmail())
+                .budgetAmount(user.getDepartment() == null ? null: user.getDepartment().getBudget() == null ? null: user.getDepartment().getBudget().getAmount())
                 .build();
     }
 

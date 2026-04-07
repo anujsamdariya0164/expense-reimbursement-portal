@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useDepartmentStore } from '../../store/useDepartmentStore'
 import { useClaimStore } from '../../store/useClaimStore'
+import { BarChart } from '../MySpendingVsBudget/BarChart'
 
 const DepartmentDetails = () => {
   const params = useParams()
@@ -10,7 +11,7 @@ const DepartmentDetails = () => {
 
   const {department, getDepartmentById} = useDepartmentStore()
 
-  const {claims, getClaimsByDepartment} = useClaimStore()
+  const {claims, getClaimsByDepartment, claimsAmountByEmployee, getClaimsAmountByEmployee} = useClaimStore()
 
   const navigate = useNavigate()
 
@@ -19,6 +20,10 @@ const DepartmentDetails = () => {
     getDepartmentById(departmentId)
     getClaimsByDepartment(departmentId)
   }, [])
+
+  useEffect(() => {
+    if (claims) getClaimsAmountByEmployee(claims)
+  }, [claims])
 
   return (
     <div className='flex flex-col m-6 gap-5'>
@@ -45,6 +50,19 @@ const DepartmentDetails = () => {
             <h1><span className='font-bold'>Budget Amount: </span> ${department.budgetAmount ?? '-'}</h1>
           </div>
         </div>
+
+        {claimsAmountByEmployee && Object.keys(claimsAmountByEmployee).length > 0 && (
+          <div className='mb-5 flex flex-col justify-between'>
+            <div>
+              <div>
+                <h1 className='font-bold text-3xl underline'>Claims By Employee</h1>
+              </div>
+              <div className='h-[2/3] w-full text-center'>
+                <BarChart labels={Object.keys(claimsAmountByEmployee)} values={Object.values(claimsAmountByEmployee)} />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       <div>

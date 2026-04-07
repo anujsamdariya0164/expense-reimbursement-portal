@@ -5,8 +5,25 @@ import toast from 'react-hot-toast';
 export const useClaimStore = create((set, get) => ({
     claim: {},
     claims: [],
+    claimsAmountByEmployee: [],
     error: null,
     isLoading: false,
+
+    getClaimsAmountByEmployee: (claims) => {
+        let claimsAmountByEmployee = {}
+        if (claims) {
+            claims.map(claim => {
+                if (claim.status === 'PAID') {
+                    if (!Object.keys(claimsAmountByEmployee).includes(claim.employeeName)) {
+                        claimsAmountByEmployee[claim.employeeName] = claim.amount
+                    } else {
+                        claimsAmountByEmployee[claim.employeeName] += claim.amount
+                    }
+                }
+            })
+        }
+        set({claimsAmountByEmployee: claimsAmountByEmployee})
+    },
 
     getClaimsByDepartment: async (id) => {
         set({isLoading: true})
@@ -85,5 +102,5 @@ export const useClaimStore = create((set, get) => ({
         } finally {
             set({isLoading: false})
         }
-    }
+    },
 }))
