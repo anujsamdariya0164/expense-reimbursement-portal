@@ -1,5 +1,7 @@
 package com.fareye.expenseReimbursementPortal.service;
 
+import com.fareye.expenseReimbursementPortal.exception.BudgetNotAssignedException;
+import com.fareye.expenseReimbursementPortal.exception.CategoryNotProvidedException;
 import com.fareye.expenseReimbursementPortal.mapper.ClaimMapper;
 import com.fareye.expenseReimbursementPortal.model.dto.CreateAuditLogRequest;
 import com.fareye.expenseReimbursementPortal.model.dto.CreateClaimRequest;
@@ -13,6 +15,8 @@ import com.fareye.expenseReimbursementPortal.repository.BudgetRepository;
 import com.fareye.expenseReimbursementPortal.repository.ClaimRepository;
 import com.fareye.expenseReimbursementPortal.repository.DepartmentRepository;
 import com.fareye.expenseReimbursementPortal.repository.UserRepository;
+import org.springframework.http.HttpRequest;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -74,81 +78,86 @@ public class ClaimService {
     }
 
     public ClaimResponse createClaim(CreateClaimRequest createClaimRequest) {
-        System.out.println("Create claim service function!");
-        User employeeById = null;
-        if (createClaimRequest.getEmployeeId() != null) {
-            employeeById = userRepository.findById(createClaimRequest.getEmployeeId()).orElseThrow(() -> new RuntimeException("Employee with ID: " + createClaimRequest.getEmployeeId() + " does not exists!"));
+        try {
+            User employeeById = null;
+            if (createClaimRequest.getEmployeeId() != null) {
+                employeeById = userRepository.findById(createClaimRequest.getEmployeeId()).orElseThrow(() -> new RuntimeException("Employee with ID: " + createClaimRequest.getEmployeeId() + " does not exists!"));
+            }
+
+            Department departmentById = null;
+            Long departmentId = employeeById.getDepartment().getId();
+            if (departmentId != null) {
+                departmentById = departmentRepository.findById(departmentId).orElseThrow(() -> new RuntimeException("Department with ID: " + departmentId + " does not exists!"));
+            }
+
+            Budget budgetById = null;
+            Long budgetId = employeeById.getDepartment().getBudget().getId();
+            if (budgetId != null) {
+                budgetById = budgetRepository.findById(budgetId).orElseThrow(() -> new RuntimeException("Budget with ID: " + budgetId + " does not exists!"));
+            }
+
+            Claim newClaim = Claim.builder()
+                    .amount(createClaimRequest.getAmount())
+                    .proofUrl(createClaimRequest.getProofUrl())
+                    .status(Claim.STATUSES.SUBMITTED)
+                    .category(createClaimRequest.getCategory())
+                    .approvalMode(Claim.APPROVAL_MODE.AUTO)
+                    .comment(createClaimRequest.getComment())
+                    .budget(budgetById)
+                    .employee(employeeById)
+                    .assignedDepartment(departmentById)
+                    .stage(0)
+                    .build();
+
+            if (
+                    (newClaim.getCategory() == Claim.CATEGORIES.MEALS && newClaim.getAmount() > 50 && (newClaim.getComment() == null || newClaim.getComment().isEmpty())) ||
+                            (newClaim.getAmount() + newClaim.getBudget().getAmount() > newClaim.getBudget().getLimit())
+            ) {
+                newClaim.setStatus(Claim.STATUSES.REJECTED);
+                newClaim.setApprovalMode(Claim.APPROVAL_MODE.AUTO);
+            } else if (newClaim.getAmount() <= 100) {
+                newClaim.setApprovalMode(Claim.APPROVAL_MODE.AUTO);
+                newClaim.setStatus(Claim.STATUSES.APPROVED);
+            } else if (newClaim.getAmount() <= 1000) {
+                newClaim.setApprovalMode(Claim.APPROVAL_MODE.MANAGER);
+            } else {
+                newClaim.setApprovalMode(Claim.APPROVAL_MODE.MANAGER_AND_ADMIN);
+            }
+
+            Claim savedClaim = claimRepository.save(newClaim);
+
+            if (employeeById != null) {
+                if (employeeById.getClaims() == null) employeeById.setClaims(new ArrayList<>());
+                employeeById.getClaims().add(savedClaim);
+                userRepository.save(employeeById);
+            }
+
+            if (budgetById != null) {
+                if (budgetById.getClaims() == null) budgetById.setClaims(new ArrayList<>());
+                budgetById.getClaims().add(savedClaim);
+                budgetRepository.save(budgetById);
+            }
+
+            if (departmentById != null) {
+                if (departmentById.getClaims() == null) departmentById.setClaims(new ArrayList<>());
+                departmentById.getClaims().add(savedClaim);
+                departmentRepository.save(departmentById);
+            }
+
+            CreateAuditLogRequest createAuditLogRequest = CreateAuditLogRequest.builder()
+                    .action(savedClaim.getStatus())
+                    .actorId(savedClaim.getEmployee().getId())
+                    .claimId(savedClaim.getId())
+                    .build();
+
+            auditLogService.createAuditLog(createAuditLogRequest);
+
+            return claimMapper.toClaimResponse(savedClaim);
+        } catch (NullPointerException e) {
+            throw new BudgetNotAssignedException();
+        } catch (HttpMessageNotReadableException e) {
+            throw new CategoryNotProvidedException("", null);
         }
-
-        Department departmentById = null;
-        Long departmentId = employeeById.getDepartment().getId();
-        if (departmentId != null) {
-            departmentById = departmentRepository.findById(departmentId).orElseThrow(() -> new RuntimeException("Department with ID: " + departmentId + " does not exists!"));
-        }
-
-        Budget budgetById = null;
-        Long budgetId = employeeById.getDepartment().getBudget().getId();
-        if (budgetId != null) {
-            budgetById = budgetRepository.findById(budgetId).orElseThrow(() -> new RuntimeException("Budget with ID: " + budgetId + " does not exists!"));
-        }
-
-        Claim newClaim = Claim.builder()
-                .amount(createClaimRequest.getAmount())
-                .proofUrl(createClaimRequest.getProofUrl())
-                .status(Claim.STATUSES.SUBMITTED)
-                .category(createClaimRequest.getCategory())
-                .approvalMode(Claim.APPROVAL_MODE.AUTO)
-                .comment(createClaimRequest.getComment())
-                .budget(budgetById)
-                .employee(employeeById)
-                .assignedDepartment(departmentById)
-                .stage(0)
-                .build();
-
-        if (
-                (newClaim.getCategory() == Claim.CATEGORIES.MEALS && newClaim.getAmount() > 50 && (newClaim.getComment() == null || newClaim.getComment().isEmpty())) ||
-                (newClaim.getAmount() + newClaim.getBudget().getAmount() > newClaim.getBudget().getLimit())
-        ) {
-            newClaim.setStatus(Claim.STATUSES.REJECTED);
-            newClaim.setApprovalMode(Claim.APPROVAL_MODE.AUTO);
-        } else if (newClaim.getAmount() <= 100) {
-            newClaim.setApprovalMode(Claim.APPROVAL_MODE.AUTO);
-            newClaim.setStatus(Claim.STATUSES.APPROVED);
-        } else if (newClaim.getAmount() <= 1000) {
-            newClaim.setApprovalMode(Claim.APPROVAL_MODE.MANAGER);
-        } else {
-            newClaim.setApprovalMode(Claim.APPROVAL_MODE.MANAGER_AND_ADMIN);
-        }
-
-        Claim savedClaim = claimRepository.save(newClaim);
-
-        if (employeeById != null) {
-            if (employeeById.getClaims() == null) employeeById.setClaims(new ArrayList<>());
-            employeeById.getClaims().add(savedClaim);
-            userRepository.save(employeeById);
-        }
-
-        if (budgetById != null) {
-            if (budgetById.getClaims() == null) budgetById.setClaims(new ArrayList<>());
-            budgetById.getClaims().add(savedClaim);
-            budgetRepository.save(budgetById);
-        }
-
-        if (departmentById != null) {
-            if (departmentById.getClaims() == null) departmentById.setClaims(new ArrayList<>());
-            departmentById.getClaims().add(savedClaim);
-            departmentRepository.save(departmentById);
-        }
-
-        CreateAuditLogRequest createAuditLogRequest = CreateAuditLogRequest.builder()
-                .action(savedClaim.getStatus())
-                .actorId(savedClaim.getEmployee().getId())
-                .claimId(savedClaim.getId())
-                .build();
-
-        auditLogService.createAuditLog(createAuditLogRequest);
-
-        return claimMapper.toClaimResponse(savedClaim);
     }
 
     public ClaimResponse updateStatus(Long id, Claim.STATUSES status) {

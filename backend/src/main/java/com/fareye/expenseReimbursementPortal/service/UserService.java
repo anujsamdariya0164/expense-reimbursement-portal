@@ -11,6 +11,7 @@ import com.fareye.expenseReimbursementPortal.model.entity.User;
 import com.fareye.expenseReimbursementPortal.repository.DepartmentRepository;
 import com.fareye.expenseReimbursementPortal.repository.RoleRepository;
 import com.fareye.expenseReimbursementPortal.repository.UserRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -100,8 +101,8 @@ public class UserService implements UserDetailsService {
             throw new EmailAlreadyExistsException("Email already exists!");
         } catch (AccessDeniedException e) {
             throw new AccessDeniedException(e.getMessage());
-        } catch (ResourceNotFoundException e) {
-            throw new ResourceNotFoundException(e.getMessage());
+        } catch (DataIntegrityViolationException e) {
+            throw new EmailAlreadyExistsException("A user with this email already exists!");
         }
     }
 
@@ -114,12 +115,6 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findUserByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User with email: " + email + " does not exists!"));
-
-        return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getEmail())
-                .password(user.getPassword())
-                .authorities(user.getRole().getRole())
-                .build();
+        return userRepository.findUserByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User with email: " + email + " does not exists!"));
     }
 }

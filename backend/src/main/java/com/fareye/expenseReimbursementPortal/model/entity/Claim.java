@@ -2,6 +2,7 @@ package com.fareye.expenseReimbursementPortal.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.antlr.v4.runtime.misc.NotNull;
 
 import java.util.List;
 
@@ -29,17 +30,17 @@ public class Claim {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "amount")
+    @Column(name = "amount", nullable = false)
     private Long amount;
 
-    @Column(name = "proof_url")
+    @Column(name = "proof_url", nullable = false)
     private String proofUrl;
 
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private STATUSES status;
 
-    @Column(name = "category")
+    @Column(name = "category", nullable = false)
     @Enumerated(EnumType.STRING)
     private CATEGORIES category;
 

@@ -34,6 +34,7 @@ export const useClaimStore = create((set, get) => ({
         } catch (error) {
             set({claims: [], error: error.response.data.message})
             console.log(error.response.data)
+            toast.error(error.response.data.message)
         }
 
         set({isLoading: false})
@@ -48,6 +49,7 @@ export const useClaimStore = create((set, get) => ({
         } catch (error) {
             set({claims: [], error: error.response.data.message})
             console.log('ERROR', error.response.data)
+            toast.error(error.response.data.message)
         }
 
         set({isLoading: false})
@@ -62,6 +64,7 @@ export const useClaimStore = create((set, get) => ({
         } catch (error) {
             set({claim: {}, error: error.response.data.message})
             console.log('ERROR', error.response.data)
+            toast.error(error.response.data.message)
         }
 
         set({isLoading: false})
@@ -82,6 +85,7 @@ export const useClaimStore = create((set, get) => ({
         } catch (error) {
             set({claim: {}, error: error.response.data.message})
             console.log(error.response.data)
+            toast.error(error.response.data.message)
             return false
         } finally {
             set({isLoading: false})

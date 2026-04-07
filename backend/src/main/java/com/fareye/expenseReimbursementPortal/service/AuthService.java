@@ -1,13 +1,14 @@
 package com.fareye.expenseReimbursementPortal.service;
 
+import com.fareye.expenseReimbursementPortal.exception.EmailPasswordNotProvided;
+import com.fareye.expenseReimbursementPortal.exception.SessionAlreadyInvalidated;
+import com.fareye.expenseReimbursementPortal.mapper.UserMapper;
 import com.fareye.expenseReimbursementPortal.model.dto.LoginRequest;
 import com.fareye.expenseReimbursementPortal.model.dto.UserResponse;
+import com.fareye.expenseReimbursementPortal.model.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,53 +20,56 @@ public class AuthService {
 
     private final UserService userService;
 
-    public AuthService(AuthenticationManager authenticationManager, UserService userService) {
+    private final UserMapper userMapper;
+
+    public AuthService(AuthenticationManager authenticationManager, UserService userService, UserMapper userMapper) {
         this.authenticationManager = authenticationManager;
         this.userService = userService;
+        this.userMapper = userMapper;
     }
 
     public UserResponse login(LoginRequest loginRequest, HttpServletRequest request) {
-        try {
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
-            Authentication authentication = authenticationManager.authenticate(authenticationToken);
-
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            HttpSession session = request.getSession(true);
-            session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
-
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-            System.out.println(userDetails.getUsername());
-
-            return userService.getUserByEmail(userDetails.getUsername());
-        } catch (BadCredentialsException e) {
-            throw new BadCredentialsException("Invalid password provided!");
+        if (loginRequest.getEmail() == null || loginRequest.getPassword() == null) {
+            throw new EmailPasswordNotProvided();
         }
+
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
+        Authentication authentication = authenticationManager.authenticate(authenticationToken);
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        HttpSession session = request.getSession(true);
+        session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+
+        User user = (User) authentication.getPrincipal();
+
+        return userMapper.toUserResponse(user);
     }
 
     public UserResponse getCurrentUser() {
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-            String email = authentication.getName();
-
-            if (email.equals("anonymousUser")) {
-                throw new AuthenticationCredentialsNotFoundException("User not authenticated!");
-            }
-
-            return userService.getUserByEmail(email);
-        } catch (AuthenticationCredentialsNotFoundException e) {
-            throw new AuthenticationCredentialsNotFoundException(e.getMessage());
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || authentication instanceof AnonymousAuthenticationToken) {
+            throw new AuthenticationCredentialsNotFoundException("User not authenticated!");
         }
+
+        String email = authentication.getName();
+
+        return userService.getUserByEmail(email);
     }
 
     public void logout(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.invalidate();
+        try {
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                session.invalidate();
+            }
+        } catch (IllegalStateException e) {
+            throw new SessionAlreadyInvalidated();
+        } finally {
+            SecurityContextHolder.clearContext();
         }
-
-        SecurityContextHolder.clearContext();
     }
 }

@@ -58,7 +58,7 @@ const DepartmentDetails = () => {
                 <h1 className='font-bold text-3xl underline'>Claims By Employee</h1>
               </div>
               <div className='h-[2/3] w-full text-center'>
-                <BarChart labels={Object.keys(claimsAmountByEmployee)} values={Object.values(claimsAmountByEmployee)} />
+                <BarChart label='Claims By Employee' labels={Object.keys(claimsAmountByEmployee)} values={Object.values(claimsAmountByEmployee)} />
               </div>
             </div>
           </div>
@@ -108,7 +108,7 @@ const DepartmentDetails = () => {
 
         <div className='w-full'>
           {
-            department.employees && 
+            department.employees && department.employees.length > 0 && 
             (
               <table className='w-full border-2'>
                 <thead>
@@ -143,8 +143,10 @@ const DepartmentDetails = () => {
           }
 
           {
-            !department.employees && (
-              <h1>No employees added yet</h1>
+            (!department.employees || department.employees.length === 0) && (
+              <div className='h-[15vh] flex justify-center items-center border-2'>
+                <h1>No employees added yet</h1>
+              </div>
             )
           }
         </div>
@@ -160,7 +162,7 @@ const DepartmentDetails = () => {
 
         <div className='w-full'>
           {
-            claims && 
+            (!claims || claims.length > 0) && 
             (
               <table className='w-full border-2'>
                 <thead>
@@ -200,8 +202,8 @@ const DepartmentDetails = () => {
           }
 
           {
-            !claims && (
-              <div className='h-[10vh] border-2 flex justify-center items-center'>
+            (!claims || claims.length === 0) && (
+              <div className='h-[15vh] border-2 flex justify-center items-center'>
                 <h1>No claims made</h1>
               </div>
             )

@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useClaimStore } from '../../store/useClaimStore'
 import { useAuthStore } from '../../store/useAuthStore'
+import toast from 'react-hot-toast'
 
 const AddClaim = () => {
     const categories = ['TRAVEL', 'TRANSPORTATION', 'MEALS', 'ENTERTAINMENT', 'SUPPLIES', 'INTERNET', 'TRAINING']
@@ -21,6 +22,8 @@ const AddClaim = () => {
         // employeeId to come from current session
     })
 
+    const amountRef = useRef()
+
     const handleChange = (key, value) => {
         setFormData((prevFormData) => ({
             ...prevFormData, [key]: value
@@ -29,6 +32,15 @@ const AddClaim = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault()
+
+        if (formData.amount === 0) {
+            toast.error('Amount is required for raising claim!')
+            return
+        }
+        if (formData.proofUrl === '') {
+            toast.error('Proof URL is required for raising claim!')
+            return
+        }
 
         console.log('ID:', authUser)
 
@@ -41,6 +53,10 @@ const AddClaim = () => {
         console.log(formData)
     }
 
+    useEffect(() => {
+        amountRef.current.focus()
+    }, [])
+
   return (
     <div className='flex items-center justify-center h-[70vh]'>
         <div className='px-[10rem] py-[2rem] border-white border-2 rounded flex flex-col justify-center items-center gap-2'>
@@ -50,7 +66,7 @@ const AddClaim = () => {
                 <form onSubmit={handleSubmit} className='flex flex-col gap-[1rem] items-center'>
                     <div className='flex gap-2 justify-between'>
                         <label htmlFor="">Amount:</label>
-                        <input type="text" name='amount' className='border border-white text-white' value={formData.amount} onChange={(e) => handleChange(e.target.name, e.target.value)} />
+                        <input type="text" name='amount' className='border border-white text-white' value={formData.amount} onChange={(e) => handleChange(e.target.name, e.target.value)} ref={amountRef} />
                     </div>
 
                     <div className='flex gap-2 justify-between'>

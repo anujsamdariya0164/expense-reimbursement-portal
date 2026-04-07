@@ -1,5 +1,6 @@
 package com.fareye.expenseReimbursementPortal.service;
 
+import com.fareye.expenseReimbursementPortal.exception.DatabaseConnectionException;
 import com.fareye.expenseReimbursementPortal.mapper.BudgetMapper;
 import com.fareye.expenseReimbursementPortal.model.dto.BudgetResponse;
 import com.fareye.expenseReimbursementPortal.model.dto.CreateBudgetRequest;
@@ -8,6 +9,7 @@ import com.fareye.expenseReimbursementPortal.model.entity.Budget;
 import com.fareye.expenseReimbursementPortal.model.entity.Department;
 import com.fareye.expenseReimbursementPortal.repository.BudgetRepository;
 import com.fareye.expenseReimbursementPortal.repository.DepartmentRepository;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,7 +32,11 @@ public class BudgetService {
     }
 
     public List<BudgetResponse> getAllBudgets() {
-        return budgetMapper.toListOfBudgetResponses(budgetRepository.findAll());
+        try {
+            return budgetMapper.toListOfBudgetResponses(budgetRepository.findAll());
+        } catch (DataAccessException e) {
+            throw new DatabaseConnectionException("Database connection error!");
+        }
     }
 
     public BudgetResponse getBudgetById(Long id) {

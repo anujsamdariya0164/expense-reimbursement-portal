@@ -19,11 +19,11 @@ const ManagerDashboard = () => {
   }, [authUser])
 
   useEffect(() => {
-    getClaimsByDepartment(department.id)
+    if (Object.keys(department).length > 0) getClaimsByDepartment(department.id)
   }, [department])
 
   useEffect(() => {
-    if (claims) getClaimsAmountByEmployee(claims)
+    if (claims && Object.keys(claims).length > 0) getClaimsAmountByEmployee(claims)
   }, [claims])
   
     return (
@@ -53,7 +53,7 @@ const ManagerDashboard = () => {
                             <h1 className='font-bold text-3xl underline'>Claims By Employee</h1>
                         </div>
                         <div className='h-[2/3] w-full text-center'>
-                            <BarChart labels={Object.keys(claimsAmountByEmployee)} values={Object.values(claimsAmountByEmployee)} />
+                            <BarChart label='Claims By Employee' labels={Object.keys(claimsAmountByEmployee)} values={Object.values(claimsAmountByEmployee)} />
                         </div>
                     </div>
                 </div>

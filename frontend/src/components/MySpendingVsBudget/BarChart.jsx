@@ -18,13 +18,13 @@ ChartJS.register(
     Legend
 )
 
-export const BarChart = ({ labels, values }) => {
+export const BarChart = ({ label, labels, values }) => {
     console.log(labels, values)
     const data = {
         labels: labels,
         datasets: [
             {
-                label: 'My Spendings V/s Budget',
+                label: label,
                 data: values,
                 borderColor: "rgba(255, 255, 255, 0.2)",
                 borderWidth: 1,

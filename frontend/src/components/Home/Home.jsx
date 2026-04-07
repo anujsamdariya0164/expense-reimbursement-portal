@@ -37,7 +37,7 @@ const Home = () => {
             <h1 className='font-bold text-3xl'>My Spendings V/s Budget:</h1>
           </div>
           <div className='h-[2/3] w-full text-center'>
-            <BarChart labels={["My Spendings", "Budget"]} values={[totalSpending || 0, authUser.budgetAmount || 0]} />
+            <BarChart label='My Spendings V/S Budget' labels={["My Spendings", "Budget"]} values={[totalSpending || 0, authUser.budgetAmount || 0]} />
           </div>
         </div>
       )}

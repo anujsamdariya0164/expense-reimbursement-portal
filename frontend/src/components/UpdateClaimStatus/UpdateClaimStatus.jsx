@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useClaimStore } from '../../store/useClaimStore'
 import { useNavigate, useParams } from 'react-router-dom'
 
@@ -12,6 +12,8 @@ const UpdateClaimStatus = () => {
   const statuses = ['REJECTED', 'SUBMITTED', 'APPROVED', 'PAID']
 
   const [status, setStatus] = useState(claim.status)
+
+  const statusRef = useRef()
 
   const handleUpdate = async (e) => {
     e.preventDefault()
@@ -28,8 +30,8 @@ const UpdateClaimStatus = () => {
   }, [param.id])
 
   useEffect(() => {
-    console.log(claim)
-  }, [claim])
+    statusRef.current.focus()
+  })
 
   return (
     <div className='flex items-center justify-center h-[70vh]'>
@@ -58,7 +60,7 @@ const UpdateClaimStatus = () => {
 
           <h3>
             <span className='font-bold'>Comment:</span>{" "}
-            {claim?.comment}
+            {(claim && claim.comment && claim.comment !== '') ? claim.comment : 'No comment added by the employee'}
           </h3>
 
           <h3>
@@ -79,10 +81,11 @@ const UpdateClaimStatus = () => {
           <div className="flex gap-2 items-center">
             <h3 className="font-bold">Status:</h3>
               <select
-              disabled={claim.status === 'REJECTED' || claim.status === 'PAID'}
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              className="bg-[#303030] text-white border border-white rounded-sm"
+                ref={statusRef}
+                disabled={claim.status === 'REJECTED' || claim.status === 'PAID'}
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                className="bg-[#303030] text-white border border-white rounded-sm"
               >
                 <option value="">Select Status</option>
                 {statuses.map(s => (

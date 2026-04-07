@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useUserStore } from '../../store/useUserStore'
 
@@ -10,27 +10,33 @@ const AssignManager = () => {
   const {createUser} = useUserStore()
 
   const [formData, setFormData] = useState({
-      name: '',
-      email: '',
-      roleId: 2,
-      departmentId: param.departmentId,
-    })
+    name: '',
+    email: '',
+    roleId: 2,
+    departmentId: param.departmentId,
+  })
 
-    const handleChange = (key, value) => {
-      setFormData((prevFormData) => ({
-        ...prevFormData, [key]: value
-      }))
-    }
+  const nameRef = useRef()
 
-    const handleSubmit = async (event) => {
-      event.preventDefault()
+  const handleChange = (key, value) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData, [key]: value
+    }))
+  }
 
-      await createUser(formData)
+  const handleSubmit = async (event) => {
+    event.preventDefault()
 
-      console.log(formData)
+    await createUser(formData)
 
-      navigate(`/admin/dashboard/department/${param.departmentId}`)
-    }
+    console.log(formData)
+
+    navigate(`/admin/dashboard/department/${param.departmentId}`)
+  }
+
+  useEffect(() => {
+    nameRef.current.focus()
+  })
 
   return (
     <div className='flex items-center justify-center h-[70vh]'>
@@ -41,7 +47,7 @@ const AssignManager = () => {
           <form onSubmit={handleSubmit} className='flex flex-col gap-[1rem] items-center'>
             <div className='flex gap-2 justify-between'>
               <label htmlFor="">Name:</label>
-              <input type="text" name='name' className='border border-white text-white' value={formData.name} onChange={(e) => handleChange(e.target.name, e.target.value)} />
+              <input type="text" ref={nameRef} name='name' className='border border-white text-white' value={formData.name} onChange={(e) => handleChange(e.target.name, e.target.value)} />
             </div>
 
             <div className='flex gap-2 justify-between'>

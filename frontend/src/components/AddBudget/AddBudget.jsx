@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useBudgetStore } from '../../store/useBudgetStore'
+import toast from 'react-hot-toast'
 
 const AddBudget = () => {
   const param = useParams()
@@ -23,6 +24,11 @@ const AddBudget = () => {
     const handleSubmit = async (event) => {
       event.preventDefault()
 
+      if (formData.limit === 0) {
+        toast.error('Limit is required!')
+        return
+      }
+
       await createBudget(formData)
 
       navigate(-1)
@@ -33,7 +39,7 @@ const AddBudget = () => {
   return (
     <div className='flex items-center justify-center h-[70vh]'>
       <div className='px-[10rem] py-[2rem] border-white border-2 rounded flex flex-col justify-center items-center gap-2'>
-        <h1 className='font-bold text-2xl'>Add Employee</h1>
+        <h1 className='font-bold text-2xl'>Add Budget</h1>
 
         <div className='px-[10rem] py-[2rem] border border-white rounded'>
           <form onSubmit={handleSubmit} className='flex flex-col gap-[1rem] items-center'>

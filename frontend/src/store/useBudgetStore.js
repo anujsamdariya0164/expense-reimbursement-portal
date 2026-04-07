@@ -17,6 +17,7 @@ export const useBudgetStore = create((set, get) => ({
         } catch (error) {
             set({budget: null, error: error.response.data.message})
             console.log('ERROR', error.response.data)
+            toast.error(error.response.data.message)
         }
 
         set({isLoading: false})

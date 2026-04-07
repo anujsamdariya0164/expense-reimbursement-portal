@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { axiosInstance } from '../lib/axios';
+import toast from 'react-hot-toast';
 
 export const useAuditLogsStore = create((set, get) => ({
     auditLogs: [],
@@ -15,6 +16,7 @@ export const useAuditLogsStore = create((set, get) => ({
         } catch (error) {
             set({auditLogs: [], error: error.response.data})
             console.log(error.response.data)
+            toast.error(error.response.data.message)
         }
 
         set({isLoading: false})

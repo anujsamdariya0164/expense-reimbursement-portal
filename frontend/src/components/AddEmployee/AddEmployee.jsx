@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useUserStore } from '../../store/useUserStore'
 
@@ -6,6 +6,8 @@ const AddEmployee = () => {
   const param = useParams()
 
   const navigate = useNavigate()
+
+  const nameRef = useRef()
 
   const {user, createUser} = useUserStore()
 
@@ -30,6 +32,10 @@ const AddEmployee = () => {
       if (isCreated) navigate(-1)
     }
 
+    useEffect(() => {
+      nameRef.current.focus()
+    }, [])
+
   return (
     <div className='flex items-center justify-center h-[70vh]'>
       <div className='px-[10rem] py-[2rem] border-white border-2 rounded flex flex-col justify-center items-center gap-2'>
@@ -39,7 +45,7 @@ const AddEmployee = () => {
           <form onSubmit={handleSubmit} className='flex flex-col gap-[1rem] items-center'>
             <div className='flex gap-2 justify-between'>
               <label htmlFor="">Name:</label>
-              <input type="text" name='name' className='border border-white text-white' value={formData.name} onChange={(e) => handleChange(e.target.name, e.target.value)} />
+              <input ref={nameRef} type="text" name='name' className='border border-white text-white' value={formData.name} onChange={(e) => handleChange(e.target.name, e.target.value)} />
             </div>
 
             <div className='flex gap-2 justify-between'>

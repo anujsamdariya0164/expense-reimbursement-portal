@@ -1,18 +1,21 @@
 package com.fareye.expenseReimbursementPortal.advice;
 
-import com.fareye.expenseReimbursementPortal.exception.EmailAlreadyExistsException;
-import com.fareye.expenseReimbursementPortal.exception.ResourceNotFoundException;
+import com.fareye.expenseReimbursementPortal.exception.*;
 import com.fareye.expenseReimbursementPortal.model.dto.ExceptionResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.naming.AuthenticationException;
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 
@@ -31,17 +34,119 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ExceptionResponse> handleIncorrectPassword(
+    public ResponseEntity<ExceptionResponse> handleIncorrectEmailOrPassword(
             BadCredentialsException exception, HttpServletRequest request
     ) {
         ExceptionResponse response = ExceptionResponse.builder()
                 .timestamp(LocalDateTime.now())
-                .status(HttpStatus.FORBIDDEN.value())
+                .status(HttpStatus.UNAUTHORIZED.value())
+                .message("Incorrect email or password!")
+                .path(request.getRequestURI())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ExceptionResponse> handleAuthenticationFailure(
+            AuthenticationException exception, HttpServletRequest request
+    ) {
+        ExceptionResponse response = ExceptionResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.UNAUTHORIZED.value())
+                .message("Authentication failed!")
+                .path(request.getRequestURI())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
+    @ExceptionHandler(EmailPasswordNotProvided.class)
+    public ResponseEntity<ExceptionResponse> handleEmailOrPasswordNotProvided(
+            EmailPasswordNotProvided exception, HttpServletRequest request
+    ) {
+        ExceptionResponse response = ExceptionResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .message("Both email and password must be provided!")
+                .path(request.getRequestURI())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleUsernameNotFound(
+            UsernameNotFoundException exception, HttpServletRequest request
+    ) {
+        ExceptionResponse response = ExceptionResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
                 .message(exception.getMessage())
                 .path(request.getRequestURI())
                 .build();
 
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ExceptionResponse> handleUsernameNotFound(
+            HttpMessageNotReadableException exception, HttpServletRequest request
+    ) {
+        String message = exception.getMessage();
+
+        if (message.contains("Claim$CATEGORIES")) message = "Category needs to be provided for raising claim!";
+
+        ExceptionResponse response = ExceptionResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .message("Category is required while raising a claim!")
+                .path(request.getRequestURI())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(BudgetNotAssignedException.class)
+    public ResponseEntity<ExceptionResponse> handleUsernameNotFound(
+            BudgetNotAssignedException exception, HttpServletRequest request
+    ) {
+        ExceptionResponse response = ExceptionResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .message("Budget has not been assigned yet!")
+                .path(request.getRequestURI())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(SessionAlreadyInvalidated.class)
+    public ResponseEntity<ExceptionResponse> handleSessionAlreadyInvalidated(
+            SessionAlreadyInvalidated exception, HttpServletRequest request
+    ) {
+        ExceptionResponse response = ExceptionResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .message("The session has already been invalidated!")
+                .path(request.getRequestURI())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleIncorrectPassword(
+            AuthenticationCredentialsNotFoundException exception, HttpServletRequest request
+    ) {
+        ExceptionResponse response = ExceptionResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.UNAUTHORIZED.value())
+                .message(exception.getMessage())
+                .path(request.getRequestURI())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
@@ -89,19 +194,27 @@ public class GlobalExceptionHandler {
         ExceptionResponse response = ExceptionResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.CONFLICT.value())
-                .path(request.getRequestURI())
+                .path("A user with this email already exists!")
                 .message(exception.getMessage())
                 .build();
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
 
+    @ExceptionHandler(DatabaseConnectionException.class)
+    public ResponseEntity<ExceptionResponse> handleDatabaseConnection(DatabaseConnectionException exception, HttpServletRequest request) {
+        ExceptionResponse response = ExceptionResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.NOT_FOUND.value())
+                .message(exception.getMessage())
+                .path(request.getRequestURI())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionResponse> handleGeneralException(Exception exception, HttpServletRequest request) {
-        if (exception.getMessage().contains("InternalAuthenticationServiceException")) {
-            return handleAuthException(new InternalAuthenticationServiceException("User with the given email does not exists!"), request);
-        }
-
         ExceptionResponse response = ExceptionResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.NOT_FOUND.value())
