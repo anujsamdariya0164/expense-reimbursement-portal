@@ -6,6 +6,7 @@ import com.fareye.expenseReimbursementPortal.model.dto.UpdateClaimRequest;
 import com.fareye.expenseReimbursementPortal.service.ClaimService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,21 +31,25 @@ public class ClaimController {
     }
 
     @GetMapping("/employee/{id}")
+    @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<List<ClaimResponse>> getClaimsByEmployee(@PathVariable String id) {
         return ResponseEntity.status(HttpStatus.OK).body(claimService.getClaimsMadeByEmployee(Long.parseLong(id)));
     }
 
     @GetMapping("/department/{id}")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<List<ClaimResponse>> getClaimsByDepartment(@PathVariable String id) {
         return ResponseEntity.status(HttpStatus.OK).body(claimService.getClaimsByDepartment(Long.parseLong(id)));
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<ClaimResponse> createClaim(@RequestBody CreateClaimRequest createClaimRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(claimService.createClaim(createClaimRequest));
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<ClaimResponse> updateClaimById(@PathVariable String id, @RequestBody UpdateClaimRequest updateClaimRequest) {
         return ResponseEntity.status(HttpStatus.OK).body(claimService.updateStatus(Long.parseLong(id), updateClaimRequest.getStatus()));
     }

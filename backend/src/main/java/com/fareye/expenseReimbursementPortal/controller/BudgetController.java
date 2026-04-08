@@ -4,9 +4,9 @@ import com.fareye.expenseReimbursementPortal.model.dto.BudgetResponse;
 import com.fareye.expenseReimbursementPortal.model.dto.CreateBudgetRequest;
 import com.fareye.expenseReimbursementPortal.model.dto.UpdateBudgetRequest;
 import com.fareye.expenseReimbursementPortal.service.BudgetService;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,6 +31,7 @@ public class BudgetController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BudgetResponse> createBudget(@RequestBody CreateBudgetRequest createBudgetRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(budgetService.createBudget(createBudgetRequest));
     }

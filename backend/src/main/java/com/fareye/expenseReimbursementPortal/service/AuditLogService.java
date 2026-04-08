@@ -9,6 +9,7 @@ import com.fareye.expenseReimbursementPortal.model.entity.User;
 import com.fareye.expenseReimbursementPortal.repository.AuditLogRepository;
 import com.fareye.expenseReimbursementPortal.repository.ClaimRepository;
 import com.fareye.expenseReimbursementPortal.repository.UserRepository;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

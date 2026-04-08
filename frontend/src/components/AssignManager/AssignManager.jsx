@@ -31,7 +31,7 @@ const AssignManager = () => {
 
     console.log(formData)
 
-    navigate(`/admin/dashboard/department/${param.departmentId}`)
+    navigate(-1)
   }
 
   useEffect(() => {

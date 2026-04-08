@@ -5,6 +5,7 @@ import com.fareye.expenseReimbursementPortal.model.dto.DepartmentResponse;
 import com.fareye.expenseReimbursementPortal.service.DepartmentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,11 +20,13 @@ public class DepartmentController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<DepartmentResponse>> getAllDepartments() {
         return ResponseEntity.status(HttpStatus.OK).body(departmentService.getAllDepartments());
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<DepartmentResponse> getDepartmentById(@PathVariable String id) {
         return ResponseEntity.status(HttpStatus.OK).body(departmentService.getDepartmentById(Long.parseLong(id)));
     }

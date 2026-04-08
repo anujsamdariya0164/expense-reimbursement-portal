@@ -4,10 +4,10 @@ import com.fareye.expenseReimbursementPortal.exception.*;
 import com.fareye.expenseReimbursementPortal.model.dto.ExceptionResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.naming.AuthenticationException;
-import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -168,7 +168,7 @@ public class GlobalExceptionHandler {
         ExceptionResponse response = ExceptionResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.FORBIDDEN.value())
-                .message(exception.getMessage())
+                .message("Access Denied!")
                 .path(request.getRequestURI())
                 .build();
 
@@ -194,13 +194,13 @@ public class GlobalExceptionHandler {
         ExceptionResponse response = ExceptionResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.CONFLICT.value())
-                .path("A user with this email already exists!")
+                .path(request.getRequestURI())
                 .message(exception.getMessage())
                 .build();
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
-
+    
     @ExceptionHandler(DatabaseConnectionException.class)
     public ResponseEntity<ExceptionResponse> handleDatabaseConnection(DatabaseConnectionException exception, HttpServletRequest request) {
         ExceptionResponse response = ExceptionResponse.builder()
@@ -215,6 +215,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionResponse> handleGeneralException(Exception exception, HttpServletRequest request) {
+        System.out.println("Here in general exception class!");
+        System.out.println(Arrays.toString(exception.getStackTrace()));
         ExceptionResponse response = ExceptionResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.NOT_FOUND.value())

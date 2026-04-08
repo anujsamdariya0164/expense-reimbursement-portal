@@ -5,6 +5,7 @@ import com.fareye.expenseReimbursementPortal.model.dto.CreateAuditLogRequest;
 import com.fareye.expenseReimbursementPortal.service.AuditLogService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class AuditLogController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<AuditLogResponse>> getAllAuditLogs() {
         return ResponseEntity.status(HttpStatus.OK).body(auditLogService.getAllAuditLogs());
     }

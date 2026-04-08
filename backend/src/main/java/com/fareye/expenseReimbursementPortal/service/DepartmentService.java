@@ -1,13 +1,13 @@
 package com.fareye.expenseReimbursementPortal.service;
 
 import com.fareye.expenseReimbursementPortal.mapper.DepartmentMapper;
-import com.fareye.expenseReimbursementPortal.mapper.UserMapper;
 import com.fareye.expenseReimbursementPortal.model.dto.DepartmentRequest;
 import com.fareye.expenseReimbursementPortal.model.dto.DepartmentResponse;
 import com.fareye.expenseReimbursementPortal.model.entity.Department;
 import com.fareye.expenseReimbursementPortal.model.entity.User;
 import com.fareye.expenseReimbursementPortal.repository.DepartmentRepository;
 import com.fareye.expenseReimbursementPortal.repository.UserRepository;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +19,7 @@ public class DepartmentService {
     private final DepartmentMapper departmentMapper;
 
     private final UserRepository userRepository;
+
     public DepartmentService(DepartmentRepository departmentRepository, DepartmentMapper departmentMapper, UserRepository userRepository) {
         this.departmentRepository = departmentRepository;
 
@@ -29,6 +30,7 @@ public class DepartmentService {
 
     public List<DepartmentResponse> getAllDepartments() {
         return departmentMapper.toListOfDepartmentResponses(departmentRepository.findAll());
+
     }
 
     public DepartmentResponse getDepartmentById(Long id) {
