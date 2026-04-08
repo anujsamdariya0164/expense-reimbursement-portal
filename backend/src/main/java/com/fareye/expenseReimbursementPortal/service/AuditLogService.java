@@ -9,6 +9,10 @@ import com.fareye.expenseReimbursementPortal.model.entity.User;
 import com.fareye.expenseReimbursementPortal.repository.AuditLogRepository;
 import com.fareye.expenseReimbursementPortal.repository.ClaimRepository;
 import com.fareye.expenseReimbursementPortal.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -36,8 +40,10 @@ public class AuditLogService {
         this.claimRepository = claimRepository;
     }
 
-    public List<AuditLogResponse> getAllAuditLogs() {
-        return auditLogMapper.toListOfAuditLogResponse(auditLogRepository.findAllByOrderByTimestampDesc());
+    public Page<AuditLogResponse> getAllAuditLogs(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("timestamp").descending());
+
+        return auditLogMapper.toListOfAuditLogResponse(auditLogRepository.findAll(pageable));
     }
 
     public AuditLogResponse getAuditLogById(Long id) {

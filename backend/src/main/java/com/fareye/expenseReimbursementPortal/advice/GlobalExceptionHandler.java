@@ -100,7 +100,7 @@ public class GlobalExceptionHandler {
         ExceptionResponse response = ExceptionResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.BAD_REQUEST.value())
-                .message("Category is required while raising a claim!")
+                .message("Required request body not provided!")
                 .path(request.getRequestURI())
                 .build();
 

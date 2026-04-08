@@ -8,7 +8,10 @@ const AdminDashboard = () => {
 
     const {departments, getAllDepartments} = useDepartmentStore()
 
-    const {auditLogs, getAllLogs} = useAuditLogsStore()
+    const {auditLogs, getAllLogs, totalPages} = useAuditLogsStore()
+
+    const [page, setPage] = React.useState(0)
+    const size = 10
 
     const convert = (timestamp) => {
         const year = timestamp.slice(0, 4)
@@ -27,8 +30,11 @@ const AdminDashboard = () => {
 
     useEffect(() => {
         getAllDepartments()
-        getAllLogs()
     }, [])
+
+    useEffect(() => {
+        getAllLogs({ page, size })
+    }, [page])
   
     return (
     <div className='flex flex-col gap-4 m-6'>
@@ -100,7 +106,7 @@ const AdminDashboard = () => {
                             <tbody>
                                 {
                                     auditLogs && 
-                                    auditLogs.reverse().map((auditLog, index) => (
+                                    auditLogs.map((auditLog, index) => (
                                         <tr key={index} className='grid grid-cols-7 p-5 text-center border-2'>
                                             <td>{auditLog.id}</td>
                                             <td>{auditLog.claimId}</td>
@@ -114,6 +120,25 @@ const AdminDashboard = () => {
                                 }
                             </tbody>
                         </table>
+                        <div className='flex justify-center gap-4 mt-4'>
+                            <button
+                                className='border px-3 py-1'
+                                disabled={page === 0}
+                                onClick={() => setPage(prev => prev - 1)}
+                            >
+                                Prev
+                            </button>
+
+                            <span>Page {page + 1}</span>
+
+                            <button
+                                className='border px-3 py-1'
+                                disabled={page + 1 >= totalPages}
+                                onClick={() => setPage(prev => prev + 1)}
+                            >
+                                Next
+                            </button>
+                        </div>
                     </div>
                 )
             }

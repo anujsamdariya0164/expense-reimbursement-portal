@@ -2,6 +2,7 @@ package com.fareye.expenseReimbursementPortal.mapper;
 
 import com.fareye.expenseReimbursementPortal.model.dto.AuditLogResponse;
 import com.fareye.expenseReimbursementPortal.model.entity.AuditLog;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -21,9 +22,7 @@ public class AuditLogMapper {
                 .build();
     }
 
-    public List<AuditLogResponse> toListOfAuditLogResponse(List<AuditLog> auditLogs) {
-        return auditLogs.stream().map(auditLog ->
-                toAuditLogResponse(auditLog)
-        ).toList();
+    public Page<AuditLogResponse> toListOfAuditLogResponse(Page<AuditLog> auditLogs) {
+        return auditLogs.map(this::toAuditLogResponse);
     }
 }

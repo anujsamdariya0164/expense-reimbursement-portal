@@ -15,6 +15,9 @@ import com.fareye.expenseReimbursementPortal.repository.BudgetRepository;
 import com.fareye.expenseReimbursementPortal.repository.ClaimRepository;
 import com.fareye.expenseReimbursementPortal.repository.DepartmentRepository;
 import com.fareye.expenseReimbursementPortal.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -64,16 +67,22 @@ public class ClaimService {
         return claimMapper.toClaimResponse(claimRepository.findById(id).orElseThrow(() -> new RuntimeException("Claim with ID: " + id + " does not exists!")));
     }
 
-    public List<ClaimResponse> getClaimsMadeByEmployee(Long employeeId) {
-        User employeeById = userRepository.findById(employeeId).orElseThrow(() -> new RuntimeException("Employee with ID: " + employeeId + " does not exists!"));
+    public Page<ClaimResponse> getClaimsMadeByEmployee(Long employeeId, int page, int size) {
+        User employeeById = userRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee with ID: " + employeeId + " does not exist!"));
 
-        return claimMapper.toListOfClaimResponse(claimRepository.findClaimByEmployee(employeeById));
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Claim> claimsPage = claimRepository.findClaimByEmployee(employeeById, pageable);
+
+        return claimsPage.map(claimMapper::toClaimResponse);
     }
 
     public List<ClaimResponse> getClaimsByDepartment(Long departmentId) {
-        Department departmentById = departmentRepository.findById(departmentId).orElseThrow(() -> new RuntimeException("Department with ID: " + departmentId + " does not exists!"));
+        Department departmentById = departmentRepository.findById(departmentId)
+                .orElseThrow(() -> new RuntimeException("Department with ID: " + departmentId + " does not exist!"));
+        List<Claim> claimsPage = claimRepository.findClaimByAssignedDepartment(departmentById);
 
-        return claimMapper.toListOfClaimResponse(claimRepository.findClaimByAssignedDepartment(departmentById));
+        return claimMapper.toListOfClaimResponse(claimsPage);
     }
 
     public ClaimResponse createClaim(CreateClaimRequest createClaimRequest) {

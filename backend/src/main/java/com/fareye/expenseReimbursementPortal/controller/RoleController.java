@@ -5,6 +5,7 @@ import com.fareye.expenseReimbursementPortal.model.dto.RoleResponse;
 import com.fareye.expenseReimbursementPortal.service.RoleService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,26 +20,31 @@ public class RoleController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<RoleResponse>> getAllRoles() {
         return ResponseEntity.status(HttpStatus.OK).body(roleService.getAllRoles());
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<RoleResponse> getRoleById(@PathVariable String id) {
         return ResponseEntity.status(HttpStatus.OK).body(roleService.getRoleById(Long.parseLong(id)));
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<RoleResponse> createRole(@RequestBody RoleRequest createRoleRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(roleService.createRole(createRoleRequest.getRole()));
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<RoleResponse> updateRoleById(@PathVariable String id, @RequestBody RoleRequest roleRequest) {
         return ResponseEntity.status(HttpStatus.OK).body(roleService.updateRole(Long.parseLong(id), roleRequest.getRole()));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteRoleById(@PathVariable String id) {
         roleService.deleteRoleById(Long.parseLong(id));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

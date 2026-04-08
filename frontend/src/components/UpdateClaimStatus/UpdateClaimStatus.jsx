@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useClaimStore } from '../../store/useClaimStore'
+import { useAuthStore } from '../../store/useAuthStore'
 import { useNavigate, useParams } from 'react-router-dom'
 
 const UpdateClaimStatus = () => {
@@ -9,9 +10,10 @@ const UpdateClaimStatus = () => {
 
   const {claim, getClaimById, updateStatus} = useClaimStore()
 
-  const statuses = ['REJECTED', 'SUBMITTED', 'APPROVED', 'PAID']
+  const {authUser} = useAuthStore()
 
   const [status, setStatus] = useState(claim.status)
+  const [isAdmin, setIsAdmin] = useState(true)
 
   const statusRef = useRef()
 
@@ -30,8 +32,12 @@ const UpdateClaimStatus = () => {
   }, [param.id])
 
   useEffect(() => {
+    if (authUser.role === 'MANAGER') setIsAdmin(false)
+  }, [authUser])
+
+  useEffect(() => {
     statusRef.current.focus()
-  })
+  }, [])
 
   return (
     <div className='flex items-center justify-center h-[70vh]'>
@@ -88,7 +94,7 @@ const UpdateClaimStatus = () => {
                 className="bg-[#303030] text-white border border-white rounded-sm"
               >
                 <option value="">Select Status</option>
-                {statuses.map(s => (
+                {(isAdmin ? ['REJECTED', 'SUBMITTED', 'APPROVED', 'PAID'] : ['REJECTED', 'SUBMITTED', 'APPROVED']).map(s => (
                   <option key={s} value={s}>{s}</option>
                 ))}
               </select>

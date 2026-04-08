@@ -4,6 +4,7 @@ import com.fareye.expenseReimbursementPortal.model.dto.CreateClaimRequest;
 import com.fareye.expenseReimbursementPortal.model.dto.ClaimResponse;
 import com.fareye.expenseReimbursementPortal.model.dto.UpdateClaimRequest;
 import com.fareye.expenseReimbursementPortal.service.ClaimService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,25 +22,37 @@ public class ClaimController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ClaimResponse>> getAllClaims() {
         return ResponseEntity.status(HttpStatus.OK).body(claimService.getAllClaims());
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ClaimResponse> getClaimById(@PathVariable String id) {
         return ResponseEntity.status(HttpStatus.OK).body(claimService.getClaimById(Long.parseLong(id)));
     }
 
     @GetMapping("/employee/{id}")
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public ResponseEntity<List<ClaimResponse>> getClaimsByEmployee(@PathVariable String id) {
-        return ResponseEntity.status(HttpStatus.OK).body(claimService.getClaimsMadeByEmployee(Long.parseLong(id)));
+    public ResponseEntity<Page<ClaimResponse>> getClaimsByEmployee(
+            @PathVariable String id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(
+                claimService.getClaimsMadeByEmployee(Long.parseLong(id), page, size)
+        );
     }
 
     @GetMapping("/department/{id}")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<List<ClaimResponse>> getClaimsByDepartment(@PathVariable String id) {
-        return ResponseEntity.status(HttpStatus.OK).body(claimService.getClaimsByDepartment(Long.parseLong(id)));
+    public ResponseEntity<List<ClaimResponse>> getClaimsByDepartment(
+            @PathVariable String id
+    ) {
+        return ResponseEntity.ok(
+                claimService.getClaimsByDepartment(Long.parseLong(id))
+        );
     }
 
     @PostMapping
@@ -55,6 +68,7 @@ public class ClaimController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteClaimById(@PathVariable String id) {
         claimService.deleteClaimById(Long.parseLong(id));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

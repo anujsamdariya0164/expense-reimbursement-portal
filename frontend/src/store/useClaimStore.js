@@ -78,8 +78,6 @@ export const useClaimStore = create((set, get) => ({
             set({claim: response.data, error: null})
             if (response.data.status === 'REJECTED') {
                 toast.success('Claim auto-rejected!')
-            } else if (response.data.status === 'APPROVED') {
-                toast.success('Claim auto-approved!')
             } else {
                 toast.success('Claim created successfully!')
             }

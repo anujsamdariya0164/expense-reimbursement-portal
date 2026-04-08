@@ -21,11 +21,13 @@ public class BudgetController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<BudgetResponse>> getAllBudgets() {
         return ResponseEntity.status(HttpStatus.OK).body(budgetService.getAllBudgets());
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BudgetResponse> getBudgetById(@PathVariable String id) {
         return ResponseEntity.status(HttpStatus.OK).body(budgetService.getBudgetById(Long.parseLong(id)));
     }
@@ -37,11 +39,13 @@ public class BudgetController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BudgetResponse> updateBudgetBydId(@PathVariable String id, @RequestBody UpdateBudgetRequest updateBudgetRequest) {
         return ResponseEntity.status(HttpStatus.OK).body(budgetService.updateBudgetById(Long.parseLong(id), updateBudgetRequest));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteBudgetById(@PathVariable String id) {
         budgetService.deleteBudgetById(Long.parseLong(id));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

@@ -22,6 +22,7 @@ public class UserController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getAllUsers());
     }
@@ -41,6 +42,7 @@ public class UserController {
 //    @PutMapping("/{id}")
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteUserById(@PathVariable String id) {
         userService.deleteUser(Long.parseLong(id));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
