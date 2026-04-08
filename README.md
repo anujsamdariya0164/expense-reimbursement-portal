@@ -10,7 +10,7 @@ This is an expense reimbursement portal where employees can seek raise claims an
 4. **ADMIN:** Can oversee all the departments, there employees, managers, and also check the audit logs that document all the status updates. The admin is responsible for the final reimbursement.
 
 ## How to run it on your device?
-To run this application on your device, follow the steps mentioned below:
+To run this application on your device, create a new folder and open your terminal there and follow the steps mentioned below:
 
 1. Clone the repository:
 ```bash

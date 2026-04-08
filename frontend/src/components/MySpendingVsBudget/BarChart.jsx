@@ -19,7 +19,6 @@ ChartJS.register(
 )
 
 export const BarChart = ({ label, labels, values }) => {
-    console.log(labels, values)
     const data = {
         labels: labels,
         datasets: [

@@ -37,7 +37,7 @@ public class AuditLogService {
     }
 
     public List<AuditLogResponse> getAllAuditLogs() {
-        return auditLogMapper.toListOfAuditLogResponse(auditLogRepository.findAll());
+        return auditLogMapper.toListOfAuditLogResponse(auditLogRepository.findAllByOrderByTimestampDesc());
     }
 
     public AuditLogResponse getAuditLogById(Long id) {

@@ -118,6 +118,30 @@ function App() {
         </Route>
         <Route path="*" element={authUser ? <PageNotFound/> : <Navigate to='/login'/>} />
       </Route>
+
+      // <Route path="/" element={<Layout/>}>
+      //   <Route path="" element={authUser ? <Home/> : <Navigate to='/login'/>} />
+      //   <Route path="/login" element={!authUser ? <Login/> : <Navigate to='/'/>}/>
+      //   <Route path="/signup" element={!authUser ? <SignUp/> : <Navigate to='/'/>} />
+      //   <Route path="claim">
+      //     <Route path="add" element={<AddClaim/>} />
+      //     <Route path=":id" element={<UpdateClaimStatus/>} />
+      //   </Route>
+      //   <Route path="dashboard" element={<ManagerDashboard/>} />
+      //   <Route path="admin">
+      //     <Route path="dashboard">
+      //       <Route path="" element={<AdminDashboard />} />
+      //       <Route path="department/:id" element={<DepartmentDetails />} />
+      //         <Route path="employee">
+      //         <Route path="add/:departmentId" element={<AddEmployee />} />
+      //         <Route path=":id" element={<EmployeeDetails />} />
+      //       </Route>
+      //       <Route path="budget/add/:id" element={<AddBudget/>} />
+      //       <Route path="manager/assign/:departmentId" element={<AssignManager/>} />
+      //     </Route>
+      //   </Route>
+      //   <Route path="*" element={authUser ? <PageNotFound/> : <Navigate to='/login'/>} />
+      // </Route>
     )
   )
 

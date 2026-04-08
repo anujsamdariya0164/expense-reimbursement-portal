@@ -15,7 +15,6 @@ export const useAuthStore = create((set, get) => ({
             const response = await axiosInstance.get('/auth/current')
             set({authUser: response.data, error: null})
         } catch (error) {
-            toast.error(error.response.data.message)
             set({authUser: null, error: error.response.data.message})
             console.log(error.response.data)
         }

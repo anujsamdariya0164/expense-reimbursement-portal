@@ -200,7 +200,7 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
-    
+
     @ExceptionHandler(DatabaseConnectionException.class)
     public ResponseEntity<ExceptionResponse> handleDatabaseConnection(DatabaseConnectionException exception, HttpServletRequest request) {
         ExceptionResponse response = ExceptionResponse.builder()

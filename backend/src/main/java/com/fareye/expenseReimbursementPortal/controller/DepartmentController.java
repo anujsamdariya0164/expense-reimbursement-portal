@@ -26,7 +26,7 @@ public class DepartmentController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<DepartmentResponse> getDepartmentById(@PathVariable String id) {
         return ResponseEntity.status(HttpStatus.OK).body(departmentService.getDepartmentById(Long.parseLong(id)));
     }

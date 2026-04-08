@@ -19,7 +19,7 @@ const ManagerDashboard = () => {
   }, [authUser])
 
   useEffect(() => {
-    if (Object.keys(department).length > 0) getClaimsByDepartment(department.id)
+    if (department && Object.keys(department).length > 0) getClaimsByDepartment(department.id)
   }, [department])
 
   useEffect(() => {
@@ -36,17 +36,17 @@ const ManagerDashboard = () => {
 
             <div className='flex justify-between p-5'>
                 <div>
-                    <h1><span className='font-bold'>Department ID: </span> {department.id ?? '-'}</h1>
-                    <h1><span className='font-bold'>Department Name: </span> {department.name ?? '-'}</h1>
+                    <h1><span className='font-bold'>Department ID: </span> {department ? department.id : '-'}</h1>
+                    <h1><span className='font-bold'>Department Name: </span> {department ? department.name : '-'}</h1>
                 </div>
 
                 <div>
-                    <h1><span className='font-bold'>Budget Limit: </span> ${department.budgetLimit ?? '-'}</h1>
-                    <h1><span className='font-bold'>Budget Amount: </span> ${department.budgetAmount ?? '-'}</h1>
+                    <h1><span className='font-bold'>Budget Limit: </span> ${department ? department.budgetLimit : '-'}</h1>
+                    <h1><span className='font-bold'>Budget Amount: </span> ${department ? department.budgetAmount : '-'}</h1>
                 </div>
             </div>
 
-            {claimsAmountByEmployee && Object.keys(claimsAmountByEmployee).length > 0 && (
+            {claimsAmountByEmployee && claimsAmountByEmployee !== undefined && Object.keys(claimsAmountByEmployee).length > 0 && (
                 <div className='mb-5 flex flex-col justify-between'>
                     <div>
                         <div>
